@@ -1,8 +1,4 @@
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST,OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type,x-admin-api-key',
-};
+const ALLOWED_ORIGIN = 'https://highkick.zhost.digital';
 
 const ADMIN_ROUTES = new Set([
   '/api/dashboard-admin',
@@ -14,12 +10,15 @@ const ADMIN_ROUTES = new Set([
 
 export default {
   async fetch(request, env) {
+    const origin = request.headers.get('Origin') || '';
+    validateOrigin_(origin);
+
     if (request.method === 'OPTIONS') {
-      return new Response(null, { status: 204, headers: CORS_HEADERS });
+      return new Response(null, { status: 204, headers: corsHeaders_(origin) });
     }
 
     if (request.method !== 'POST') {
-      return jsonResponse(false, 'Method tidak diizinkan', null, 405);
+      return jsonResponse(false, 'Method tidak diizinkan', null, 405, origin);
     }
 
     try {
@@ -27,7 +26,7 @@ export default {
       const path = url.pathname;
 
       if (path === '/health') {
-        return jsonResponse(true, 'Worker aktif', { service: 'taekwondo-management-worker' }, 200);
+        return jsonResponse(true, 'Worker aktif', { service: 'highkick' }, 200, origin);
       }
 
       if (path === '/api/login-anggota') {
@@ -62,9 +61,9 @@ export default {
         return handleProxy(request, env, 'updateSettingIuran', { requireAdminKey: true });
       }
 
-      return jsonResponse(false, 'Route tidak ditemukan', null, 404);
+      return jsonResponse(false, 'Route tidak ditemukan', null, 404, origin);
     } catch (error) {
-      return jsonResponse(false, error.message || 'Terjadi error pada worker', null, 400);
+      return jsonResponse(false, error.message || 'Terjadi error pada worker', null, 400, request.headers.get('Origin') || '');
     }
   },
 };
@@ -98,17 +97,36 @@ async function handleProxy(request, env, action, options = {}) {
   try {
     parsed = JSON.parse(text);
   } catch {
-    return jsonResponse(false, 'Response GAS tidak valid', { raw: text }, 502);
+    return jsonResponse(false, 'Response GAS tidak valid', { raw: text }, 502, request.headers.get('Origin') || '');
   }
 
   const statusCode = parsed.success === false ? 400 : 200;
   return new Response(JSON.stringify(parsed), {
     status: statusCode,
     headers: {
-      ...CORS_HEADERS,
+      ...corsHeaders_(request.headers.get('Origin') || ''),
       'Content-Type': 'application/json; charset=utf-8',
     },
   });
+}
+
+function validateOrigin_(origin) {
+  if (!origin) {
+    return;
+  }
+  if (origin !== ALLOWED_ORIGIN) {
+    throw new Error('Origin tidak diizinkan');
+  }
+}
+
+function corsHeaders_(origin) {
+  const allowOrigin = origin === ALLOWED_ORIGIN ? origin : ALLOWED_ORIGIN;
+  return {
+    'Access-Control-Allow-Origin': allowOrigin,
+    'Access-Control-Allow-Methods': 'POST,OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type,x-admin-api-key',
+    Vary: 'Origin',
+  };
 }
 
 function validateEnvironment_(env) {
@@ -138,7 +156,7 @@ async function readJson_(request) {
   return request.json();
 }
 
-function jsonResponse(success, message, data, status = 200) {
+function jsonResponse(success, message, data, status = 200, origin = '') {
   return new Response(
     JSON.stringify({
       success,
@@ -149,7 +167,7 @@ function jsonResponse(success, message, data, status = 200) {
     {
       status,
       headers: {
-        ...CORS_HEADERS,
+        ...corsHeaders_(origin),
         'Content-Type': 'application/json; charset=utf-8',
       },
     },

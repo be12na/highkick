@@ -1,4 +1,8 @@
-name = "taekwondo-management-worker"
+name = "highkick"
 main = "worker/src/index.js"
 compatibility_date = "2026-04-09"
-workers_dev = true
+workers_dev = false
+
+routes = [
+  { pattern = "highkick.zhost.digital/*", custom_domain = true }
+]
