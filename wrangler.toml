@@ -4,5 +4,5 @@ compatibility_date = "2026-04-09"
 workers_dev = false
 
 routes = [
-  { pattern = "highkick.zhost.digital/*", custom_domain = true }
+  { pattern = "highkick.zhost.digital", custom_domain = true }
 ]
