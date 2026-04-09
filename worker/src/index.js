@@ -46,7 +46,12 @@ export default {
       }
 
       if (path === '/api/admin/anggota') {
-        return handleProxy(request, env, 'saveAnggota', { requireAdminKey: true });
+        return handleModeProxy(
+          request,
+          env,
+          { list: 'listAnggota', default: 'saveAnggota' },
+          { requireAdminKey: true },
+        );
       }
 
       if (path === '/api/admin/iuran-bulanan') {
@@ -58,7 +63,12 @@ export default {
       }
 
       if (path === '/api/admin/setting-iuran') {
-        return handleProxy(request, env, 'updateSettingIuran', { requireAdminKey: true });
+        return handleModeProxy(
+          request,
+          env,
+          { list: 'getSettingIuran', default: 'updateSettingIuran' },
+          { requireAdminKey: true },
+        );
       }
 
       return jsonResponse(false, 'Route tidak ditemukan', null, 404, origin);
@@ -77,6 +87,29 @@ async function handleProxy(request, env, action, options = {}) {
   if (options.requireAdminKey || ADMIN_ROUTES.has(path)) {
     // Proteksi sederhana route admin memakai internal API key.
     validateAdminKey_(request, env);
+  }
+
+  return forwardToGas_(request, env, action, body);
+}
+
+async function handleModeProxy(request, env, actionMap, options = {}) {
+  validateEnvironment_(env);
+
+  const path = new URL(request.url).pathname;
+  const body = await readJson_(request);
+
+  if (options.requireAdminKey || ADMIN_ROUTES.has(path)) {
+    validateAdminKey_(request, env);
+  }
+
+  const mode = normalizeText_(body.mode).toLowerCase();
+  const action = actionMap[mode] || actionMap.default;
+  return forwardToGas_(request, env, action, body);
+}
+
+async function forwardToGas_(request, env, action, body) {
+  if (!action) {
+    throw new Error('Action tidak valid untuk route ini');
   }
 
   const payload = {
@@ -108,6 +141,13 @@ async function handleProxy(request, env, action, options = {}) {
       'Content-Type': 'application/json; charset=utf-8',
     },
   });
+}
+
+function normalizeText_(value) {
+  if (value === null || typeof value === 'undefined') {
+    return '';
+  }
+  return String(value).trim();
 }
 
 function validateOrigin_(origin) {

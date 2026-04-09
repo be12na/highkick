@@ -23,6 +23,8 @@
 
 1. Dari root project jalankan `npm create cloudflare@latest` jika belum install Wrangler.
 2. Pastikan file root `wrangler.toml` sudah ada.
+   - Worker name: `highkick`
+   - Custom domain route: `highkick.zhost.digital`
 3. Salin `.dev.vars.example` menjadi `.dev.vars` untuk local.
 4. Isi `.dev.vars`:
    - `GAS_WEB_APP_URL`
@@ -35,12 +37,16 @@
    - `wrangler secret put DB_TARGET_SHEET_ID`
    - `wrangler secret put INTERNAL_API_KEY`
 7. Deploy:
-   - `wrangler deploy`
+    - `wrangler deploy`
+8. Verifikasi domain custom Cloudflare:
+   - Buka `https://highkick.zhost.digital/health`
+   - Pastikan response `success: true`
 
 ## 4) Jalankan UI sederhana
 
 1. Serve folder `web/` dengan static server sederhana (misalnya extension Live Server).
-2. Buka `web/index.html`.
+2. Akses aplikasi dari domain yang diizinkan Worker: `https://highkick.zhost.digital`.
+   - Worker hanya menerima origin `https://highkick.zhost.digital`.
 3. Test urut:
    - login anggota
    - dashboard anggota
