@@ -1,0 +1,4 @@
+name = "taekwondo-management-worker"
+main = "worker/src/index.js"
+compatibility_date = "2026-04-09"
+workers_dev = true

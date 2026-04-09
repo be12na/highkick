@@ -1,0 +1,3 @@
+GAS_WEB_APP_URL="https://script.google.com/macros/s/REPLACE_ME/exec"
+DB_TARGET_SHEET_ID="REPLACE_WITH_SHEET_ID"
+INTERNAL_API_KEY="ganti_dengan_key_rahasia"

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Admin - Taekwondo</title>
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header class="topbar">
+        <h1>Dashboard Admin</h1>
+        <button id="btn-logout-admin" class="btn btn-secondary" type="button">Logout</button>
+      </header>
+
+      <section class="grid-four">
+        <article class="card"><h3>Total Anggota</h3><p id="sum-total-anggota">-</p></article>
+        <article class="card"><h3>Aktif</h3><p id="sum-aktif">-</p></article>
+        <article class="card"><h3>Tunggakan Bulanan</h3><p id="sum-tunggakan-bulanan">-</p></article>
+        <article class="card"><h3>Tunggakan Kas</h3><p id="sum-tunggakan-kas">-</p></article>
+      </section>
+
+      <section class="card">
+        <h2>Data Anggota</h2>
+        <form id="form-anggota" class="grid-two">
+          <input name="member_id" placeholder="member_id (kosongkan jika baru)" />
+          <input name="nomor_anggota" placeholder="Nomor anggota" required />
+          <input name="nama_lengkap" placeholder="Nama lengkap" required />
+          <input name="dojo_cabang" placeholder="Dojo/cabang" />
+          <input name="tingkatan_sabuk" placeholder="Tingkatan sabuk" />
+          <input name="peringkat" placeholder="Peringkat" />
+          <input name="tanggal_bergabung" type="date" />
+          <select name="status_anggota">
+            <option>Aktif</option>
+            <option>Nonaktif</option>
+            <option>Cuti</option>
+          </select>
+          <button class="btn" type="submit">Simpan Anggota</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Setting Iuran</h2>
+        <form id="form-setting-iuran" class="grid-two">
+          <input name="setting_id" placeholder="setting_id (opsional update)" />
+          <input name="nama_iuran" placeholder="Nama iuran" required />
+          <select name="tipe_iuran">
+            <option value="bulanan">Bulanan</option>
+            <option value="kas">Kas</option>
+          </select>
+          <input name="nominal_default" type="number" min="0" placeholder="Nominal default" required />
+          <input name="mulai_berlaku" placeholder="YYYY-MM" />
+          <select name="aktif">
+            <option value="true">Aktif</option>
+            <option value="false">Nonaktif</option>
+          </select>
+          <button class="btn" type="submit">Simpan Setting</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Input Iuran Bulanan</h2>
+        <form id="form-iuran-bulanan" class="grid-two">
+          <input name="nomor_anggota" placeholder="Nomor anggota" required />
+          <input name="periode" placeholder="YYYY-MM" required />
+          <input name="nominal_bayar" type="number" min="0" placeholder="Nominal bayar" required />
+          <input name="tanggal_bayar" type="date" />
+          <input name="metode_bayar" placeholder="Metode bayar" />
+          <input name="catatan" placeholder="Catatan" />
+          <button class="btn" type="submit">Simpan Iuran Bulanan</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Input Iuran Kas</h2>
+        <form id="form-iuran-kas" class="grid-two">
+          <input name="nomor_anggota" placeholder="Nomor anggota" required />
+          <input name="periode" placeholder="YYYY-MM" required />
+          <input name="nominal_bayar" type="number" min="0" placeholder="Nominal bayar" required />
+          <input name="tanggal_bayar" type="date" />
+          <input name="catatan" placeholder="Catatan" />
+          <button class="btn" type="submit">Simpan Iuran Kas</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Daftar Anggota</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Nomor</th>
+                <th>Nama</th>
+                <th>Sabuk</th>
+                <th>Peringkat</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="table-anggota"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <p id="admin-message" class="message"></p>
+    </main>
+
+    <script src="./js/app.js"></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/admin.js"></script>
+  </body>
+</html>
