@@ -11,7 +11,10 @@ const ADMIN_ROUTES = new Set([
 export default {
   async fetch(request, env) {
     const origin = request.headers.get('Origin') || '';
-    validateOrigin_(origin);
+    const originCheck = checkOrigin_(origin);
+    if (!originCheck.valid) {
+      return jsonResponse(false, originCheck.message, null, 403, origin);
+    }
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: corsHeaders_(origin) });
@@ -150,13 +153,14 @@ function normalizeText_(value) {
   return String(value).trim();
 }
 
-function validateOrigin_(origin) {
+function checkOrigin_(origin) {
   if (!origin) {
-    return;
+    return { valid: false, message: 'Origin wajib ada' };
   }
   if (origin !== ALLOWED_ORIGIN) {
-    throw new Error('Origin tidak diizinkan');
+    return { valid: false, message: 'Origin tidak diizinkan' };
   }
+  return { valid: true, message: '' };
 }
 
 function corsHeaders_(origin) {
