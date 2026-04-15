@@ -15,7 +15,7 @@ const btnLogout = document.getElementById('btn-logout-admin');
 btnLogout?.addEventListener('click', () => {
   localStorage.removeItem('admin_api_key');
   localStorage.removeItem('admin_profile');
-  window.location.href = './index.html';
+  window.location.href = '/index.html';
 });
 
 formAnggota?.addEventListener('submit', async (e) => {
@@ -100,7 +100,7 @@ async function loadAnggotaTable() {
 async function initAdminPage() {
   const key = localStorage.getItem('admin_api_key');
   if (!key) {
-    window.location.href = './index.html';
+window.location.href = 'web/index.html';
     return;
   }
   try {

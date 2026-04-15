@@ -1,0 +1,67 @@
+# Highkick Taekwondo - cPanel .htaccess
+
+# Protect config files from web access
+<Files "config/database.php">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Enable RewriteEngine
+RewriteEngine On
+RewriteBase /
+
+# API Routes - Forward all /api/* requests to PHP API
+RewriteRule ^api/(.*)$ api/index.php [L,QSA]
+
+# HTML Pages - Serve from web/ folder
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(index|admin|anggota)\.html$ web/$1.html [L,QSA]
+
+# Root redirect to web/index.html
+RewriteRule ^/?$ web/index.html [L,R=301]
+
+# Security Headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Disable directory listing
+Options -Indexes
+
+# Prevent access to hidden files
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# PHP Settings
+<IfModule mod_php.c>
+    php_flag display_errors Off
+    php_flag log_errors On
+    php_value max_execution_time 300
+    php_value memory_limit 256M
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+</IfModule>
+
+# Compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# Browser caching
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+</IfModule>
+
+# Default charset
+AddDefaultCharset UTF-8

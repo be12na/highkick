@@ -23,7 +23,7 @@ formAnggota?.addEventListener('submit', async (e) => {
       throw new Error('Nomor anggota tidak ditemukan');
     }
     localStorage.setItem('nomor_anggota', payload.nomor_anggota);
-    window.location.href = './anggota.html';
+    window.location.href = '/anggota.html';
   } catch (err) {
     showMessage(authMessage, err.message, true);
   }
@@ -49,7 +49,7 @@ formAdmin?.addEventListener('submit', async (e) => {
     }
 
     localStorage.setItem('admin_profile', JSON.stringify(res.data.admin || {}));
-    window.location.href = './admin.html';
+    window.location.href = '/admin.html';
   } catch (err) {
     showMessage(authMessage, err.message, true);
   }

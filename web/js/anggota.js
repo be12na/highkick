@@ -36,7 +36,7 @@ function renderHistory(tableEl, rows) {
 
 async function initAnggotaPage() {
   if (!nomorAnggota) {
-    window.location.href = './index.html';
+window.location.href = '/index.html';
     return;
   }
 
