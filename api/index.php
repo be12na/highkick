@@ -81,7 +81,7 @@ try {
             break;
         case 'listAnggota':
             validateAdminKey($input['internal_api_key'] ?? '');
-            $result = listAnggota();
+            $result = listAnggota($data);
             break;
         case 'updateSettingIuran':
             validateAdminKey($input['internal_api_key'] ?? '');
@@ -157,6 +157,58 @@ function validateAdminKey($providedKey) {
     }
 }
 
+function checkRateLimit($identifier) {
+    $key = 'rl_' . md5($identifier);
+    $attempts = intval(cacheGet($key, 0));
+    if ($attempts >= 5) {
+        throw new Exception('Terlalu banyak percobaan. Coba lagi dalam 15 menit.');
+    }
+}
+
+function recordFailedAttempt($identifier) {
+    $key = 'rl_' . md5($identifier);
+    $attempts = intval(cacheGet($key, 0)) + 1;
+    cacheSet($key, $attempts, 900);
+}
+
+function clearFailedAttempts($identifier) {
+    $key = 'rl_' . md5($identifier);
+    cacheDelete($key);
+}
+
+function cacheGet($key, $default = null) {
+    $file = __DIR__ . '/../cache/' . $key . '.cache';
+    if (!file_exists($file)) {
+        return $default;
+    }
+    $data = json_decode(file_get_contents($file), true);
+    if (!$data || $data['expire'] < time()) {
+        @unlink($file);
+        return $default;
+    }
+    return $data['value'];
+}
+
+function cacheSet($key, $value, $ttl = 900) {
+    $dir = __DIR__ . '/../cache';
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0755, true);
+    }
+    $file = $dir . '/' . $key . '.cache';
+    $data = [
+        'value' => $value,
+        'expire' => time() + $ttl,
+    ];
+    file_put_contents($file, json_encode($data));
+}
+
+function cacheDelete($key) {
+    $file = __DIR__ . '/../cache/' . $key . '.cache';
+    if (file_exists($file)) {
+        @unlink($file);
+    }
+}
+
 function paymentStatus($nominalTagihan, $nominalBayar) {
     if ($nominalBayar >= $nominalTagihan) {
         return 'Lunas';
@@ -197,14 +249,19 @@ function loginAdmin($data) {
         throw new Exception('email_admin dan password_pin wajib diisi');
     }
 
+    checkRateLimit($email);
+
     $row = db()->fetchOne(
-        "SELECT * FROM admin_user WHERE LOWER(email_admin) = ? AND password_pin = ? AND status_aktif != 'false'",
-        [$email, $passwordPin]
+        "SELECT * FROM admin_user WHERE LOWER(email_admin) = ? AND status_aktif != 'false'",
+        [$email]
     );
 
-    if (!$row) {
+    if (!$row || !password_verify($passwordPin, $row['password_pin'])) {
+        recordFailedAttempt($email);
         return ['login' => false, 'role' => 'admin', 'admin' => null];
     }
+
+    clearFailedAttempts($email);
 
     return [
         'login' => true,
@@ -218,8 +275,27 @@ function loginAdmin($data) {
     ];
 }
 
-function listAnggota() {
-    return db()->fetchAll("SELECT * FROM anggota ORDER BY created_at DESC");
+function listAnggota($options = []) {
+    $page = max(1, intval($options['page'] ?? 1));
+    $limit = min(100, max(1, intval($options['limit'] ?? 20)));
+    $offset = ($page - 1) * $limit;
+
+    $total = db()->fetchOne("SELECT COUNT(*) as cnt FROM anggota")['cnt'] ?? 0;
+
+    $rows = db()->fetchAll(
+        "SELECT * FROM anggota ORDER BY created_at DESC LIMIT ? OFFSET ?",
+        [$limit, $offset]
+    );
+
+    return [
+        'data' => $rows,
+        'pagination' => [
+            'page' => $page,
+            'limit' => $limit,
+            'total' => $total,
+            'total_pages' => ceil($total / $limit),
+        ],
+    ];
 }
 
 function getAnggotaByNomor($nomorAnggota) {
@@ -231,8 +307,8 @@ function getAnggotaByNomor($nomorAnggota) {
 
 function saveAnggota($data) {
     $mode = strtolower(normalize($data['mode']));
-    if ($mode === 'list') {
-        return listAnggota();
+if ($mode === 'list') {
+        return listanggota($data);
     }
 
     $nomorAnggota = normalize($data['nomor_anggota']);
@@ -432,22 +508,36 @@ function getDashboardAnggota($data) {
 }
 
 function getDashboardAdmin() {
-    $anggota = listAnggota();
-    $bulanan = db()->fetchAll("SELECT * FROM iuran_bulanan");
-    $kas = db()->fetchAll("SELECT * FROM iuran_kas");
+    $stats = db()->fetchOne("
+        SELECT
+            COUNT(*) as total,
+            SUM(CASE WHEN status_anggota = 'Aktif' THEN 1 ELSE 0 END) as aktif,
+            SUM(CASE WHEN status_anggota = 'Nonaktif' THEN 1 ELSE 0 END) as nonaktif,
+            SUM(CASE WHEN status_anggota = 'Cuti' THEN 1 ELSE 0 END) as cuti
+        FROM anggota
+    ") ?: ['total' => 0, 'aktif' => 0, 'nonaktif' => 0, 'cuti' => 0];
 
-    $bulanan = array_map('mapStatusIuran', $bulanan);
-    $kas = array_map('mapStatusIuran', $kas);
+    $tunggakanBulanan = db()->fetchOne("
+        SELECT COALESCE(SUM(nominal_tagihan - nominal_bayar), 0) as outstanding
+        FROM iuran_bulanan
+        WHERE nominal_bayar < nominal_tagihan
+    ")['outstanding'] ?? 0;
 
-    $totalAktif = 0;
-    $totalNonaktif = 0;
-    $totalCuti = 0;
-    foreach ($anggota as $a) {
-        $status = normalize($a['status_anggota']);
-        if ($status === 'Aktif') $totalAktif++;
-        elseif ($status === 'Nonaktif') $totalNonaktif++;
-        elseif ($status === 'Cuti') $totalCuti++;
-    }
+    $tunggakanKas = db()->fetchOne("
+        SELECT COALESCE(SUM(nominal_tagihan - nominal_bayar), 0) as outstanding
+        FROM iuran_kas
+        WHERE nominal_bayar < nominal_tagihan
+    ")['outstanding'] ?? 0;
+
+    return [
+        'total_anggota' => $stats['total'],
+        'total_anggota_aktif' => $stats['aktif'],
+        'total_anggota_nonaktif' => $stats['nonaktif'],
+        'total_anggota_cuti' => $stats['cuti'],
+        'total_tunggakan_bulanan' => $tunggakanBulanan,
+        'total_tunggakan_kas' => $tunggakanKas,
+    ];
+}
 
     return [
         'total_anggota' => count($anggota),

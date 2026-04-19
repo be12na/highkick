@@ -99,8 +99,8 @@ async function loadAnggotaTable() {
 
 async function initAdminPage() {
   const key = localStorage.getItem('admin_api_key');
-  if (!key) {
-window.location.href = 'web/index.html';
+if (!key) {
+    window.location.href = '/index.html';
     return;
   }
   try {

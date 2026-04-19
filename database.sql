@@ -101,10 +101,10 @@ CREATE TABLE `iuran_kas` (
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- ----------------------------
--- Initial Data - Admin User (default password: admin123)
+-- Initial Data - Admin User (password: admin123, hashed with password_hash)
 -- ----------------------------
 INSERT INTO `admin_user` (`admin_id`, `nama_admin`, `email_admin`, `password_pin`, `role`, `status_aktif`) VALUES
-('adm_001', 'Administrator', 'admin@highkick.com', 'admin123', 'admin', 'true');
+('adm_001', 'Administrator', 'admin@highkick.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'true');
 
 -- ----------------------------
 -- Initial Data - Setting Iuran
