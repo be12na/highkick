@@ -1,4 +1,11 @@
 <?php
+/**
+ * Tujuan file/module: Menjadi entrypoint API PHP untuk login, dashboard, dan operasi admin aplikasi Highkick.
+ * Pemakai oleh siapa: Browser frontend (`/web/js/*.js`), rewrite `/api/*` dari Apache/cPanel, dan health check deploy.
+ * Dependensi utama: `config/database.php`, PDO MySQL, tabel `anggota`, `admin_user`, `setting_iuran`, `iuran_bulanan`, `iuran_kas`.
+ * Daftar fungsi public/utama: routing action API, `loginAnggota`, `loginAdmin`, `getDashboardAnggota`, `getDashboardAdmin`, CRUD data inti.
+ * Side effect penting: membaca body JSON request, query/ubah database MySQL, validasi header admin key, menulis file cache rate-limit.
+ */
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
@@ -56,7 +63,7 @@ if (!$action) {
 
 try {
     $result = null;
-    $data = $input['data'] ?? [];
+    $data = isset($input['data']) && is_array($input['data']) ? $input['data'] : $input;
 
     switch ($action) {
         case 'health':
@@ -72,31 +79,31 @@ try {
             $result = getDashboardAnggota($data);
             break;
         case 'getDashboardAdmin':
-            validateAdminKey($input['internal_api_key'] ?? '');
+            validateAdminKey(resolveAdminApiKey($input));
             $result = getDashboardAdmin();
             break;
         case 'saveAnggota':
-            validateAdminKey($input['internal_api_key'] ?? '');
+            validateAdminKey(resolveAdminApiKey($input));
             $result = saveAnggota($data);
             break;
         case 'listAnggota':
-            validateAdminKey($input['internal_api_key'] ?? '');
+            validateAdminKey(resolveAdminApiKey($input));
             $result = listAnggota($data);
             break;
         case 'updateSettingIuran':
-            validateAdminKey($input['internal_api_key'] ?? '');
+            validateAdminKey(resolveAdminApiKey($input));
             $result = updateSettingIuran($data);
             break;
         case 'getSettingIuran':
-            validateAdminKey($input['internal_api_key'] ?? '');
+            validateAdminKey(resolveAdminApiKey($input));
             $result = getSettingIuran();
             break;
         case 'saveIuranBulanan':
-            validateAdminKey($input['internal_api_key'] ?? '');
+            validateAdminKey(resolveAdminApiKey($input));
             $result = saveIuranBulanan($data);
             break;
         case 'saveIuranKas':
-            validateAdminKey($input['internal_api_key'] ?? '');
+            validateAdminKey(resolveAdminApiKey($input));
             $result = saveIuranKas($data);
             break;
         default:
@@ -155,6 +162,14 @@ function validateAdminKey($providedKey) {
     if (normalize($providedKey) !== INTERNAL_API_KEY) {
         throw new Exception('Internal API key tidak valid');
     }
+}
+
+function resolveAdminApiKey($input) {
+    $headerKey = $_SERVER['HTTP_X_ADMIN_API_KEY'] ?? '';
+    if ($headerKey !== '') {
+        return $headerKey;
+    }
+    return $input['internal_api_key'] ?? '';
 }
 
 function checkRateLimit($identifier) {
@@ -536,16 +551,6 @@ function getDashboardAdmin() {
         'total_anggota_cuti' => $stats['cuti'],
         'total_tunggakan_bulanan' => $tunggakanBulanan,
         'total_tunggakan_kas' => $tunggakanKas,
-    ];
-}
-
-    return [
-        'total_anggota' => count($anggota),
-        'total_anggota_aktif' => $totalAktif,
-        'total_anggota_nonaktif' => $totalNonaktif,
-        'total_anggota_cuti' => $totalCuti,
-        'total_tunggakan_bulanan' => totalOutstanding($bulanan),
-        'total_tunggakan_kas' => totalOutstanding($kas),
     ];
 }
 
