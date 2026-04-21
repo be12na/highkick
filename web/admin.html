@@ -464,10 +464,11 @@
               </div>
             </div>
             <form id="form-iuran-bulanan" class="admin-form-grid-fields">
-              <label class="admin-field">
+              <div class="admin-field" style="position:relative;">
                 <span class="admin-field__label">Nomor anggota</span>
-                <input name="nomor_anggota" placeholder="Nomor anggota" required />
-              </label>
+                <input name="nomor_anggota" placeholder="Ketik nama atau nomor..." autocomplete="off" required />
+                <div class="admin-autocomplete-dropdown hidden"></div>
+              </div>
               <label class="admin-field">
                 <span class="admin-field__label">Periode</span>
                 <input name="periode" placeholder="YYYY-MM" required />
@@ -500,10 +501,11 @@
               </div>
             </div>
             <form id="form-iuran-kas" class="admin-form-grid-fields">
-              <label class="admin-field">
+              <div class="admin-field" style="position:relative;">
                 <span class="admin-field__label">Nomor anggota</span>
-                <input name="nomor_anggota" placeholder="Nomor anggota" required />
-              </label>
+                <input name="nomor_anggota" placeholder="Ketik nama atau nomor..." autocomplete="off" required />
+                <div class="admin-autocomplete-dropdown hidden"></div>
+              </div>
               <label class="admin-field">
                 <span class="admin-field__label">Periode</span>
                 <input name="periode" placeholder="YYYY-MM" required />

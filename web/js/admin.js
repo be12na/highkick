@@ -318,6 +318,77 @@ formGantiPassword?.addEventListener('submit', async (event) => {
   });
 });
 
+// Autocomplete Setup for Nomor Anggota
+function setupAutocomplete(formElement) {
+  if (!formElement) return;
+  const input = formElement.querySelector('input[name="nomor_anggota"]');
+  const dropdown = formElement.querySelector('.admin-autocomplete-dropdown');
+  if (!input || !dropdown) return;
+
+  let debounceTimer;
+
+  input.addEventListener('input', (e) => {
+    input.setCustomValidity(""); // Clear previous validation
+    clearTimeout(debounceTimer);
+    const term = e.target.value.trim().toLowerCase();
+
+    if (term.length < 3) {
+      dropdown.classList.add('hidden');
+      return;
+    }
+
+    debounceTimer = setTimeout(() => {
+      const matches = state.members.filter(m => 
+        (m.nama_lengkap && m.nama_lengkap.toLowerCase().includes(term)) ||
+        (m.nomor_anggota && m.nomor_anggota.toLowerCase().includes(term))
+      ).slice(0, 10);
+
+      dropdown.innerHTML = '';
+      
+      if (matches.length === 0) {
+        dropdown.innerHTML = '<div class="admin-autocomplete-empty">Anggota tidak ditemukan</div>';
+      } else {
+        matches.forEach(m => {
+          const item = document.createElement('div');
+          item.className = 'admin-autocomplete-item';
+          item.innerHTML = `
+            <div class="admin-autocomplete-name">${escapeHtml(m.nama_lengkap || '-')}</div>
+            <div class="admin-autocomplete-no">${escapeHtml(m.nomor_anggota || '-')}</div>
+          `;
+          item.addEventListener('click', () => {
+            input.value = m.nomor_anggota;
+            input.setCustomValidity("");
+            dropdown.classList.add('hidden');
+          });
+          dropdown.appendChild(item);
+        });
+      }
+      dropdown.classList.remove('hidden');
+    }, 300);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.add('hidden');
+    }
+  });
+  
+  input.addEventListener('blur', () => {
+    setTimeout(() => {
+      const val = input.value.trim();
+      if (val && !state.members.some(m => String(m.nomor_anggota).toLowerCase() === val.toLowerCase())) {
+        input.setCustomValidity("Nomor anggota tidak terdaftar. Silakan pilih dari daftar pencarian.");
+        input.reportValidity();
+      } else {
+        input.setCustomValidity("");
+      }
+    }, 200);
+  });
+}
+
+setupAutocomplete(formBulanan);
+setupAutocomplete(formKas);
+
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden) {
     refreshDashboard({ silent: true, announceSuccess: false });
