@@ -19,8 +19,8 @@ const tableKas = document.getElementById('table-kas');
 
 const pageLoader = document.getElementById('page-loader');
 const viewSections = Array.from(document.querySelectorAll('.view-section'));
-const navLinks = Array.from(document.querySelectorAll('.admin-nav__link[data-target], .admin-nav__sublink[data-target]'));
-const navToggles = Array.from(document.querySelectorAll('.nav-toggle'));
+const navLinks = Array.from(document.querySelectorAll('.admin-nav__link-clean[data-target], .admin-nav__subitem[data-target]'));
+const navToggles = Array.from(document.querySelectorAll('.admin-nav__group-toggle'));
 
 const sidebar = document.getElementById('admin-sidebar');
 const sidebarBackdrop = document.getElementById('admin-sidebar-backdrop');
