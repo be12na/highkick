@@ -355,8 +355,9 @@ function setupAutocomplete(formElement) {
             <div class="admin-autocomplete-name">${escapeHtml(m.nama_lengkap || '-')}</div>
             <div class="admin-autocomplete-no">${escapeHtml(m.nomor_anggota || '-')}</div>
           `;
-          item.addEventListener('click', () => {
-            input.value = m.nomor_anggota;
+          item.addEventListener('mousedown', (ev) => {
+            ev.preventDefault(); // Prevent input from losing focus
+            input.value = m.nomor_anggota || '';
             input.setCustomValidity("");
             dropdown.classList.add('hidden');
           });
@@ -367,22 +368,20 @@ function setupAutocomplete(formElement) {
     }, 300);
   });
 
-  document.addEventListener('click', (e) => {
+  document.addEventListener('mousedown', (e) => {
     if (!input.contains(e.target) && !dropdown.contains(e.target)) {
       dropdown.classList.add('hidden');
     }
   });
   
   input.addEventListener('blur', () => {
-    setTimeout(() => {
-      const val = input.value.trim();
-      if (val && !state.members.some(m => String(m.nomor_anggota).toLowerCase() === val.toLowerCase())) {
-        input.setCustomValidity("Nomor anggota tidak terdaftar. Silakan pilih dari daftar pencarian.");
-        input.reportValidity();
-      } else {
-        input.setCustomValidity("");
-      }
-    }, 200);
+    const val = input.value.trim();
+    if (val && !state.members.some(m => m.nomor_anggota && String(m.nomor_anggota).toLowerCase() === val.toLowerCase())) {
+      input.setCustomValidity("Nomor anggota tidak terdaftar. Silakan pilih dari daftar pencarian.");
+      input.reportValidity();
+    } else {
+      input.setCustomValidity("");
+    }
   });
 }
 
