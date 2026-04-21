@@ -1,3 +1,10 @@
+/**
+ * Tujuan: proxy aman dari route publik /api/* ke Google Apps Script dengan response JSON konsisten.
+ * Dipakai oleh: route Cloudflare Worker untuk domain aplikasi dan semua halaman web yang memanggil /api/*.
+ * Dependensi utama: Cloudflare Workers runtime, env secrets, endpoint Google Apps Script.
+ * Fungsi public/utama: fetch(request, env), handleProxy(request, env, action), handleModeProxy(request, env, actionMap).
+ * Side effect penting: validasi origin/header, HTTP call ke GAS, baca body request, kirim response JSON/CORS.
+ */
 const ALLOWED_ORIGIN = 'https://highkick.zhost.digital';
 
 const ADMIN_ROUTES = new Set([
@@ -33,23 +40,23 @@ export default {
       }
 
       if (path === '/api/login-anggota') {
-        return handleProxy(request, env, 'loginAnggota');
+        return await handleProxy(request, env, 'loginAnggota');
       }
 
       if (path === '/api/login-admin') {
-        return handleProxy(request, env, 'loginAdmin');
+        return await handleProxy(request, env, 'loginAdmin');
       }
 
       if (path === '/api/dashboard-anggota') {
-        return handleProxy(request, env, 'getDashboardAnggota');
+        return await handleProxy(request, env, 'getDashboardAnggota');
       }
 
       if (path === '/api/dashboard-admin') {
-        return handleProxy(request, env, 'getDashboardAdmin', { requireAdminKey: true });
+        return await handleProxy(request, env, 'getDashboardAdmin', { requireAdminKey: true });
       }
 
       if (path === '/api/admin/anggota') {
-        return handleModeProxy(
+        return await handleModeProxy(
           request,
           env,
           { list: 'listAnggota', default: 'saveAnggota' },
@@ -58,15 +65,15 @@ export default {
       }
 
       if (path === '/api/admin/iuran-bulanan') {
-        return handleProxy(request, env, 'saveIuranBulanan', { requireAdminKey: true });
+        return await handleProxy(request, env, 'saveIuranBulanan', { requireAdminKey: true });
       }
 
       if (path === '/api/admin/iuran-kas') {
-        return handleProxy(request, env, 'saveIuranKas', { requireAdminKey: true });
+        return await handleProxy(request, env, 'saveIuranKas', { requireAdminKey: true });
       }
 
       if (path === '/api/admin/setting-iuran') {
-        return handleModeProxy(
+        return await handleModeProxy(
           request,
           env,
           { list: 'getSettingIuran', default: 'updateSettingIuran' },
@@ -122,11 +129,22 @@ async function forwardToGas_(request, env, action, body) {
     internal_api_key: env.INTERNAL_API_KEY,
   };
 
-  const response = await fetch(env.GAS_WEB_APP_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
+  let response;
+  try {
+    response = await fetch(env.GAS_WEB_APP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+  } catch (error) {
+    return jsonResponse(
+      false,
+      'Worker gagal menghubungi Google Apps Script',
+      { detail: error.message || 'Unknown upstream error' },
+      502,
+      request.headers.get('Origin') || '',
+    );
+  }
 
   const text = await response.text();
   let parsed;
