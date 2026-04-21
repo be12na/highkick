@@ -155,6 +155,15 @@ async function switchView(targetId) {
     sharedKpis.classList.remove('hidden');
   }
 
+  // Update Breadcrumb Text
+  const breadcrumbCurrent = document.getElementById('breadcrumb-current');
+  if (breadcrumbCurrent) {
+    const activeLink = document.querySelector(`.admin-nav__link-clean[data-target="${targetId}"], .admin-nav__subitem[data-target="${targetId}"]`);
+    if (activeLink) {
+      breadcrumbCurrent.textContent = activeLink.textContent.trim();
+    }
+  }
+
   // Scroll to nested target if applicable
   if (parentSection) {
     const nestedEl = document.getElementById(targetId);
@@ -163,6 +172,21 @@ async function switchView(targetId) {
     }
   }
 }
+
+// Global search event
+const globalSearchInput = document.getElementById('global-search-input');
+globalSearchInput?.addEventListener('input', (event) => {
+  const term = event.target.value.trim();
+  if (memberSearch) memberSearch.value = term;
+  state.searchTerm = term;
+  
+  // If not in anggota list or operations, move there to show results
+  if (term && state.currentView !== 'section-anggota' && state.currentView !== 'section-operations') {
+    switchView('section-anggota');
+  } else {
+    renderMemberTable();
+  }
+});
 
 window.addEventListener('resize', () => {
   syncSidebarMode();
@@ -846,6 +870,25 @@ async function initAdminPage() {
     return;
   }
 
+  // RBAC Permission Check
+  let role = 'admin';
+  try {
+    const adminProfileStr = localStorage.getItem('admin_profile');
+    if (adminProfileStr) {
+      const profileInfo = JSON.parse(adminProfileStr);
+      role = profileInfo.role || 'admin';
+    }
+  } catch (e) {}
+
+  if (role !== 'superadmin') {
+    const navVisualisasi = document.querySelector('[data-target="section-analytics"]');
+    const navSetting = document.querySelector('[data-target="section-operations"]');
+    const navEditPassword = document.querySelector('.admin-nav__subitem[href="#"][data-target="section-overview"]:nth-child(2)'); // Ganti Password
+    if (navVisualisasi) navVisualisasi.style.display = 'none';
+    if (navSetting) navSetting.style.display = 'none';
+    if (navEditPassword) navEditPassword.style.display = 'none';
+  }
+
   if (memberSort) {
     memberSort.value = `${state.sortKey}:${state.sortDirection}`;
   }
@@ -861,3 +904,4 @@ async function initAdminPage() {
 }
 
 initAdminPage();
+

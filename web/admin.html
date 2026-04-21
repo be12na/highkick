@@ -126,18 +126,34 @@
       ></button>
 
       <main class="admin-main">
-        <header class="admin-mobilebar">
-          <button id="btn-sidebar-toggle" class="admin-mobilebar__toggle" type="button" aria-label="Buka navigasi admin">
-            <span class="admin-mobilebar__toggle-icon" aria-hidden="true">
-              <span></span>
-              <span></span>
-              <span></span>
-            </span>
-            <span class="admin-mobilebar__toggle-label">Menu</span>
-          </button>
-          <button class="btn btn-secondary admin-mobilebar__refresh" type="button" data-refresh-dashboard>
-            Refresh
-          </button>
+        <header class="admin-topbar">
+          <div class="admin-topbar__left">
+            <button id="btn-sidebar-toggle" class="admin-mobilebar__toggle" type="button" aria-label="Buka navigasi admin">
+              <span class="admin-mobilebar__toggle-icon" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+              </span>
+              <span class="admin-mobilebar__toggle-label">Menu</span>
+            </button>
+            <nav aria-label="Breadcrumb" class="admin-breadcrumb">
+              <ol class="admin-breadcrumb__list">
+                <li class="admin-breadcrumb__item">Dashboard</li>
+                <li class="admin-breadcrumb__separator">/</li>
+                <li class="admin-breadcrumb__item admin-breadcrumb__item--active" id="breadcrumb-current">Ikhtisar</li>
+              </ol>
+            </nav>
+          </div>
+          
+          <div class="admin-topbar__right">
+            <div class="admin-global-search">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="global-search-input" placeholder="Cari anggota (Nama / No)..." aria-label="Global Search">
+            </div>
+            <button class="btn btn-secondary admin-mobilebar__refresh" type="button" data-refresh-dashboard>
+              Refresh
+            </button>
+          </div>
         </header>
 
         <!-- Unified Loading Indicator -->

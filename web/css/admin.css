@@ -459,6 +459,87 @@
   width: auto;
 }
 
+.admin-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--admin-space-4);
+  padding: 12px 16px;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg);
+  box-shadow: var(--admin-shadow-soft);
+  position: sticky;
+  top: 12px;
+  z-index: 12;
+  flex-wrap: wrap;
+}
+
+.admin-topbar__left,
+.admin-topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-topbar .admin-mobilebar__toggle {
+  display: none; /* Only show on mobile */
+}
+
+.admin-breadcrumb__list {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--admin-text-muted);
+}
+
+.admin-breadcrumb__item {
+  font-weight: 500;
+}
+
+.admin-breadcrumb__item--active {
+  color: var(--admin-heading);
+  font-weight: 700;
+}
+
+.admin-breadcrumb__separator {
+  opacity: 0.5;
+}
+
+.admin-global-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.admin-global-search svg {
+  position: absolute;
+  left: 12px;
+  color: var(--admin-text-muted);
+}
+
+.admin-global-search input {
+  padding: 10px 16px 10px 38px;
+  border-radius: 999px;
+  border: 1px solid var(--admin-border);
+  background: var(--admin-surface);
+  font-size: 14px;
+  width: 260px;
+  transition: all 0.2s ease;
+}
+
+.admin-global-search input:focus {
+  width: 320px;
+  border-color: var(--admin-primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
 .admin-hero {
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) minmax(320px, 1fr);
@@ -967,8 +1048,8 @@
     display: block;
   }
 
-  .admin-mobilebar {
-    display: flex;
+  .admin-topbar .admin-mobilebar__toggle {
+    display: inline-flex;
   }
 
   .admin-sidebar__close {
@@ -1060,10 +1141,22 @@
     padding: 14px;
   }
 
-  .admin-mobilebar {
+  .admin-topbar {
     top: 8px;
     gap: 10px;
     padding: 8px 10px;
+  }
+
+  .admin-breadcrumb {
+    display: none;
+  }
+
+  .admin-global-search input {
+    width: 200px;
+  }
+
+  .admin-global-search input:focus {
+    width: 240px;
   }
 
   .admin-mobilebar__toggle,
