@@ -161,7 +161,7 @@ async function switchView(targetId) {
   
   // Also show shared sections (like KPIs) if we are on dashboard sections
   const sharedKpis = document.getElementById('section-kpis');
-  if (sharedKpis && (resolvedViewId === 'section-overview' || resolvedViewId === 'section-analytics')) {
+  if (sharedKpis && resolvedViewId === 'section-overview') {
     sharedKpis.classList.remove('hidden');
   }
 
@@ -998,10 +998,8 @@ async function initAdminPage() {
   } catch (e) {}
 
   if (role !== 'superadmin') {
-    const navVisualisasi = document.querySelector('[data-target="section-analytics"]');
     const navSetting = document.querySelector('[data-target="section-operations"]');
     const navEditPassword = document.querySelector('.admin-nav__subitem[href="#"][data-target="section-overview"]:nth-child(2)'); // Ganti Password
-    if (navVisualisasi) navVisualisasi.style.display = 'none';
     if (navSetting) navSetting.style.display = 'none';
     if (navEditPassword) navEditPassword.style.display = 'none';
   }
