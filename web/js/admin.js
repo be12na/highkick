@@ -332,6 +332,10 @@ function toggleSidebar(forceOpen) {
   const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : !document.body.classList.contains('admin-sidebar-open');
   document.body.classList.toggle('admin-sidebar-open', shouldOpen);
 
+  if (!shouldOpen && document.activeElement && sidebar && sidebar.contains(document.activeElement)) {
+    document.activeElement.blur();
+  }
+
   if (sidebarBackdrop) {
     sidebarBackdrop.hidden = !shouldOpen;
   }
