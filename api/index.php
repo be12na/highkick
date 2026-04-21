@@ -18,6 +18,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once __DIR__ . '/../config/database.php';
 
+try {
+    db()->execute("ALTER TABLE admin_user ADD COLUMN session_token VARCHAR(255) NULL");
+} catch (\Throwable $e) {
+    // Ignore if column already exists or altering fails
+}
+
 $method = $_SERVER['REQUEST_METHOD'];
 if ($method !== 'POST') {
     jsonResponse(false, 'Method tidak diizinkan', null, 405);

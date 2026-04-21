@@ -1,17 +1,17 @@
 const CACHE_NAME = 'highkick-pwa-cache-v1';
 const ASSETS_TO_CACHE = [
-  '/web/index.html',
-  '/web/admin.html',
-  '/web/anggota.html',
-  '/web/css/style.css',
-  '/web/css/admin.css',
-  '/web/css/login.css',
-  '/web/js/app.js',
-  '/web/js/api.js',
-  '/web/js/auth.js',
-  '/web/js/admin.js',
-  '/web/js/anggota.js',
-  '/web/assets/highkick-logo.jpg'
+  '/index.html',
+  '/admin.html',
+  '/anggota.html',
+  '/css/style.css',
+  '/css/admin.css',
+  '/css/login.css',
+  '/js/app.js',
+  '/js/api.js',
+  '/js/auth.js',
+  '/js/admin.js',
+  '/js/anggota.js',
+  '/assets/highkick-logo.jpg'
 ];
 
 self.addEventListener('install', (event) => {
@@ -52,7 +52,7 @@ self.addEventListener('fetch', (event) => {
         return networkResponse;
       }).catch(() => {
         if (event.request.mode === 'navigate') {
-          return caches.match('/web/index.html');
+          return caches.match('/index.html');
         }
       });
 

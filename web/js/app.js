@@ -39,7 +39,7 @@ function setupPWA() {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       // Pastikan path sw.js benar sesuai struktur directory (berada didalam /web/)
-      navigator.serviceWorker.register('/web/sw.js')
+      navigator.serviceWorker.register('/sw.js')
         .then(reg => console.log('ServiceWorker registered:', reg.scope))
         .catch(err => console.log('ServiceWorker error:', err));
     });
@@ -66,7 +66,7 @@ function showInstallBanner() {
   banner.innerHTML = `
     <div style="position:fixed; bottom:24px; left:50%; transform:translateX(-50%); width:max-content; max-width:90vw; background:#ffffff; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.15); padding:16px; display:flex; align-items:center; gap:20px; z-index:9999; border: 1px solid #e5e7eb; animation: slideUp 0.4s ease-out;">
       <div style="display:flex; align-items:center; gap:12px;">
-        <img src="/web/assets/highkick-logo.jpg" style="width:40px; height:40px; border-radius:8px; object-fit:cover;">
+        <img src="/assets/highkick-logo.jpg" style="width:40px; height:40px; border-radius:8px; object-fit:cover;">
         <div style="text-align:left;">
           <strong style="display:block; font-size:14px; color:#1f2937; margin-bottom:2px;">Aplikasi Highkick</strong>
           <small style="color:#6b7280; font-size:12px;">Instal agar lebih cepat & ringan</small>
