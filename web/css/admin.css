@@ -43,7 +43,8 @@
     radial-gradient(circle at top left, rgba(37, 99, 235, 0.32), transparent 30%),
     radial-gradient(circle at 85% 15%, rgba(245, 158, 11, 0.18), transparent 24%),
     linear-gradient(160deg, #08111f 0%, #10203a 52%, #071425 100%);
-  font-family: "Segoe UI", "Trebuchet MS", Arial, sans-serif;
+  font-family: 'Inter', "Segoe UI", "Trebuchet MS", Arial, sans-serif;
+  font-size: 14px;
 }
 
 .admin-page.admin-sidebar-open {
@@ -121,6 +122,7 @@
   background: var(--admin-surface);
   border-right: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(18px);
+  color: #f8fbff;
 }
 
 .admin-sidebar__inner {
@@ -255,8 +257,9 @@
 }
 
 .admin-nav__content strong {
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.2;
+  color: inherit;
 }
 
 .admin-nav__content small {
@@ -505,8 +508,8 @@
 
 .admin-hero__title {
   margin: 0;
-  font-size: clamp(2rem, 4vw, 3.35rem);
-  line-height: 1.02;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  line-height: 1.1;
   color: var(--admin-heading);
 }
 
@@ -656,8 +659,8 @@
 .admin-kpi-card__value {
   display: block;
   margin-top: 4px;
-  font-size: clamp(1.8rem, 3vw, 2.4rem);
-  line-height: 1.05;
+  font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+  line-height: 1.1;
   color: var(--admin-heading);
 }
 
@@ -1151,6 +1154,8 @@ button.admin-nav__link {
   text-align: left;
   cursor: pointer;
   background: transparent;
+  color: rgba(226, 232, 240, 0.94);
+  font-size: 14px;
 }
 .nav-chevron {
   margin-left: auto;

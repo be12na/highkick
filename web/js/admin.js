@@ -798,7 +798,7 @@ async function refreshDashboard({ silent = false, announceSuccess = false } = {}
     ]);
 
     state.summary = summaryResponse.data || {};
-    state.members = Array.isArray(membersResponse.data) ? membersResponse.data : [];
+    state.members = Array.isArray(membersResponse.data?.data) ? membersResponse.data.data : (Array.isArray(membersResponse.data) ? membersResponse.data : []);
     state.lastUpdatedAt = new Date();
 
     renderSummary();

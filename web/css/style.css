@@ -15,10 +15,10 @@
   --border: #e2e8f0;
   --focus-ring: rgba(37, 99, 235, 0.4);
   /* Typography Scale */
-  --font-base: clamp(0.875rem, 0.8vw + 0.6rem, 1rem); /* 14px to 16px */
-  --font-h1: clamp(1.75rem, 3vw + 1rem, 2.5rem);
-  --font-h2: clamp(1.5rem, 2vw + 1rem, 2rem);
-  --font-small: clamp(0.75rem, 0.5vw + 0.6rem, 0.875rem);
+  --font-base: clamp(0.8125rem, 0.5vw + 0.6rem, 0.9375rem); /* 13px to 15px */
+  --font-h1: clamp(1.25rem, 2vw + 0.5rem, 1.75rem);
+  --font-h2: clamp(1.125rem, 1.5vw + 0.5rem, 1.5rem);
+  --font-small: clamp(0.6875rem, 0.4vw + 0.5rem, 0.8125rem);
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
@@ -36,7 +36,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-size: var(--font-base);
-  line-height: 1.6;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
