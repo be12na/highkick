@@ -344,7 +344,7 @@ if ($mode === 'list') {
     if (!$memberId) {
         $memberId = generateId('mbr');
         db()->execute(
-            "INSERT INTO anggota (member_id, nomor_anggota, nama_lengkap, dojo_cabang, tingkatan_sabuk, peringkat, tanggal_bergabung, status_anggota, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())",
+            "INSERT INTO anggota (member_id, nomor_anggota, nama_lengkap, dojo_cabang, tingkatan_sabuk, peringkat, tanggal_bergabung, status_anggota, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())",
             [
                 $memberId,
                 $nomorAnggota,
