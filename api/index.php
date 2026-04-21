@@ -62,6 +62,8 @@ if (!$action) {
         $action = 'updateAdminProfile';
     } elseif (strpos($path, 'admin/password') !== false) {
         $action = 'updateAdminPassword';
+    } elseif (strpos($path, 'admin/list-iuran') !== false) {
+        $action = 'listIuran';
     } elseif (strpos($path, 'health') !== false) {
         $action = 'health';
     }
@@ -123,6 +125,10 @@ try {
         case 'updateAdminPassword':
             validateAdminToken(resolveAdminToken($input));
             $result = updateAdminPassword($data, resolveAdminToken($input));
+            break;
+        case 'listIuran':
+            validateAdminToken(resolveAdminToken($input));
+            $result = listIuran($data);
             break;
         default:
             throw new Exception('Action tidak dikenali: ' . $action);
@@ -698,4 +704,41 @@ function updateAdminPassword($data, $token) {
     );
 
     return true;
+}
+
+function listIuran($options = []) {
+    $bulanan = db()->fetchAll(
+        "SELECT ib.*, 'bulanan' AS tipe_iuran, a.nama_lengkap
+         FROM iuran_bulanan ib
+         LEFT JOIN anggota a ON a.nomor_anggota = ib.nomor_anggota
+         ORDER BY ib.periode DESC, ib.created_at DESC"
+    );
+
+    $kas = db()->fetchAll(
+        "SELECT ik.*, 'kas' AS tipe_iuran, a.nama_lengkap
+         FROM iuran_kas ik
+         LEFT JOIN anggota a ON a.nomor_anggota = ik.nomor_anggota
+         ORDER BY ik.periode DESC, ik.created_at DESC"
+    );
+
+    $bulanan = array_map(function ($r) {
+        $r['status_pembayaran'] = paymentStatus(toNumber($r['nominal_tagihan']), toNumber($r['nominal_bayar']));
+        return $r;
+    }, $bulanan);
+
+    $kas = array_map(function ($r) {
+        $r['status_pembayaran'] = paymentStatus(toNumber($r['nominal_tagihan']), toNumber($r['nominal_bayar']));
+        return $r;
+    }, $kas);
+
+    $merged = array_merge($bulanan, $kas);
+    usort($merged, function ($a, $b) {
+        return strcmp($b['periode'] ?? '', $a['periode'] ?? '');
+    });
+
+    return [
+        'data' => $merged,
+        'total_bulanan' => count($bulanan),
+        'total_kas' => count($kas),
+    ];
 }

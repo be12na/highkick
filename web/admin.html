@@ -83,7 +83,7 @@
                 <svg class="admin-nav__chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
               </button>
               <div class="admin-nav__submenu">
-                <a class="admin-nav__subitem" href="#" data-target="section-setting-iuran">Data Iuran</a>
+                <a class="admin-nav__subitem" href="#" data-target="section-data-iuran">Data Iuran</a>
                 <a class="admin-nav__subitem" href="#" data-target="section-iuran-bulanan">Tambah Iuran Bulanan</a>
                 <a class="admin-nav__subitem" href="#" data-target="section-iuran-kas">Tambah Iuran Kas</a>
               </div>
@@ -357,6 +357,54 @@
             </table>
           </div>
         </section>
+
+          <section id="section-data-iuran" class="admin-panel admin-panel--table view-section hidden" aria-label="Rekap data iuran">
+            <div class="admin-panel__header admin-panel__header--stack">
+              <div>
+                <p class="admin-panel__eyebrow">Rekap seluruh transaksi</p>
+                <h3 class="admin-panel__title">Data Iuran</h3>
+              </div>
+              <span id="iuran-table-count" class="admin-panel__hint">Memuat data iuran...</span>
+            </div>
+
+            <div class="admin-toolbar" style="grid-template-columns: 1fr 1fr;" aria-label="Filter iuran">
+              <label class="admin-field">
+                <span class="admin-field__label">Filter tipe</span>
+                <select id="iuran-type-filter">
+                  <option value="all">Semua</option>
+                  <option value="bulanan">Bulanan</option>
+                  <option value="kas">Kas</option>
+                </select>
+              </label>
+              <label class="admin-field">
+                <span class="admin-field__label">Filter status</span>
+                <select id="iuran-status-filter">
+                  <option value="all">Semua status</option>
+                  <option value="Lunas">Lunas</option>
+                  <option value="Belum Bayar">Belum Bayar</option>
+                  <option value="Cicil">Cicil</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="table-wrap admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Tipe</th>
+                    <th>No. Anggota</th>
+                    <th>Periode</th>
+                    <th>Tagihan</th>
+                    <th>Bayar</th>
+                    <th>Status</th>
+                    <th>Tgl Bayar</th>
+                    <th>Metode</th>
+                  </tr>
+                </thead>
+                <tbody id="table-data-iuran"></tbody>
+              </table>
+            </div>
+          </section>
 
           <section id="section-operations" class="admin-operations view-section hidden" aria-label="Panel operasional admin">
 

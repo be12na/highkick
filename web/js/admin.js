@@ -62,6 +62,9 @@ const state = {
   summary: {},
   members: [],
   filteredMembers: [],
+  iuranData: [],
+  iuranTypeFilter: 'all',
+  iuranStatusFilter: 'all',
   sortKey: 'nama_lengkap',
   sortDirection: 'asc',
   searchTerm: '',
@@ -150,6 +153,11 @@ async function switchView(targetId) {
   // Show the resolved view section
   const targetSec = document.getElementById(resolvedViewId);
   if (targetSec) targetSec.classList.remove('hidden');
+
+  // Lazy-load iuran data when entering Data Iuran section
+  if (resolvedViewId === 'section-data-iuran' && state.iuranData.length === 0) {
+    loadIuranData();
+  }
   
   // Also show shared sections (like KPIs) if we are on dashboard sections
   const sharedKpis = document.getElementById('section-kpis');
@@ -894,6 +902,76 @@ async function refreshDashboard({ silent = false, announceSuccess = false } = {}
     state.isLoading = false;
     setMetricLoading(false);
   }
+}
+
+// === DATA IURAN ===
+const iuranTypeFilter = document.getElementById('iuran-type-filter');
+const iuranStatusFilterEl = document.getElementById('iuran-status-filter');
+const tableDataIuran = document.getElementById('table-data-iuran');
+const iuranTableCount = document.getElementById('iuran-table-count');
+
+iuranTypeFilter?.addEventListener('change', (e) => {
+  state.iuranTypeFilter = e.target.value;
+  renderIuranTable();
+});
+
+iuranStatusFilterEl?.addEventListener('change', (e) => {
+  state.iuranStatusFilter = e.target.value;
+  renderIuranTable();
+});
+
+async function loadIuranData() {
+  try {
+    if (iuranTableCount) iuranTableCount.textContent = 'Memuat data iuran...';
+    const res = await postApi('/api/admin/list-iuran', {}, true);
+    state.iuranData = Array.isArray(res.data?.data) ? res.data.data : [];
+    renderIuranTable();
+  } catch (err) {
+    if (tableDataIuran) {
+      tableDataIuran.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:24px;color:#b91c1c;">Gagal memuat data iuran: ${escapeHtml(err.message)}</td></tr>`;
+    }
+  }
+}
+
+function renderIuranTable() {
+  if (!tableDataIuran) return;
+
+  let rows = state.iuranData;
+
+  if (state.iuranTypeFilter !== 'all') {
+    rows = rows.filter(r => r.tipe_iuran === state.iuranTypeFilter);
+  }
+  if (state.iuranStatusFilter !== 'all') {
+    rows = rows.filter(r => r.status_pembayaran === state.iuranStatusFilter);
+  }
+
+  if (iuranTableCount) {
+    iuranTableCount.textContent = `${rows.length} transaksi ditemukan`;
+  }
+
+  if (!rows.length) {
+    tableDataIuran.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--admin-text-muted);">Belum ada data iuran.</td></tr>';
+    return;
+  }
+
+  tableDataIuran.innerHTML = rows.map(r => {
+    const tipeLabel = r.tipe_iuran === 'bulanan' ? 'Bulanan' : 'Kas';
+    const tipeBg = r.tipe_iuran === 'bulanan' ? '#dbeafe' : '#fef3c7';
+    const tipeColor = r.tipe_iuran === 'bulanan' ? '#1e40af' : '#92400e';
+    const statusColor = r.status_pembayaran === 'Lunas' ? 'var(--admin-success)' : (r.status_pembayaran === 'Belum Bayar' ? '#dc2626' : '#d97706');
+    const statusBg = r.status_pembayaran === 'Lunas' ? 'rgba(16,185,129,0.12)' : (r.status_pembayaran === 'Belum Bayar' ? 'rgba(220,38,38,0.1)' : 'rgba(217,119,6,0.1)');
+
+    return `<tr>
+      <td><span style="display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;background:${tipeBg};color:${tipeColor};">${tipeLabel}</span></td>
+      <td>${escapeHtml(r.nomor_anggota)}</td>
+      <td>${escapeHtml(r.periode)}</td>
+      <td>${formatRupiah(r.nominal_tagihan)}</td>
+      <td>${formatRupiah(r.nominal_bayar)}</td>
+      <td><span style="display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;background:${statusBg};color:${statusColor};">${escapeHtml(r.status_pembayaran)}</span></td>
+      <td>${r.tanggal_bayar ? formatDate(r.tanggal_bayar) : '-'}</td>
+      <td>${escapeHtml(r.metode_bayar || '-')}</td>
+    </tr>`;
+  }).join('');
 }
 
 async function initAdminPage() {
