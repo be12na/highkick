@@ -16,9 +16,22 @@ const ASSETS_TO_CACHE = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(ASSETS_TO_CACHE))
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then(async (cache) => {
+      // Fetch and cache files individually to prevent one failure from breaking the entire installation
+      for (const asset of ASSETS_TO_CACHE) {
+        try {
+          const request = new Request(asset, { cache: 'reload' });
+          const response = await fetch(request);
+          if (response.ok) {
+            await cache.put(request, response.clone());
+          } else {
+            console.warn(`[Service Worker] Failed to fetch ${asset}: ${response.status}`);
+          }
+        } catch (error) {
+          console.error(`[Service Worker] Fetch error for ${asset}:`, error);
+        }
+      }
+    }).then(() => self.skipWaiting())
   );
 });
 

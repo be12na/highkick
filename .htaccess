@@ -34,10 +34,15 @@ RewriteRule ^api/?(.*)$ api/index.php [L,QSA]
 RewriteRule ^$ web/index.html [L]
 
 # Clean URL pages → serve from web/ folder
-# /admin → web/admin.html, /anggota → web/anggota.html
+# /admin and /admin/* → web/admin.html
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(admin|anggota)$ web/$1.html [L]
+RewriteRule ^admin(?:/.*)?$ web/admin.html [L]
+
+# /anggota → web/anggota.html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^anggota$ web/anggota.html [L]
 
 # Static assets: /css/, /js/, /assets/, /manifest.json, /sw.js → web/
 RewriteCond %{REQUEST_FILENAME} !-f

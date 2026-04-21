@@ -45,7 +45,7 @@ const chartMemberStatus = document.getElementById('chart-member-status');
 const chartMemberStatusFallback = document.getElementById('chart-member-status-fallback');
 
 const POLL_INTERVAL_MS = 45000;
-const TABLE_COLUMN_COUNT = 7;
+const TABLE_COLUMN_COUNT = 8;
 const STATUS_SORT_ORDER = {
   Aktif: 0,
   Cuti: 1,
@@ -98,6 +98,17 @@ navToggles.forEach((btn) => {
   });
 });
 
+const routeMap = {
+  'section-overview': '/admin',
+  'section-anggota': '/admin/daftar-anggota',
+  'section-form-anggota': '/admin/tambah-anggota',
+  'section-profile': '/admin/profile',
+  'section-data-iuran': '/admin/data-iuran',
+  'section-iuran-bulanan': '/admin/tambah-iuran-bulanan',
+  'section-iuran-kas': '/admin/tambah-iuran-kas',
+  'section-setting-iuran': '/admin/setting-iuran'
+};
+
 navLinks.forEach((link) => {
   link.addEventListener('click', (e) => {
     e.preventDefault();
@@ -108,9 +119,23 @@ navLinks.forEach((link) => {
   });
 });
 
-async function switchView(targetId) {
+window.addEventListener('popstate', (e) => {
+  if (e.state && e.state.targetId) {
+    switchView(e.state.targetId, false);
+  } else {
+    const path = window.location.pathname;
+    const targetId = Object.keys(routeMap).find(k => routeMap[k] === path) || 'section-overview';
+    switchView(targetId, false);
+  }
+});
+
+async function switchView(targetId, updateHistory = true) {
   if (state.currentView === targetId && document.getElementById(targetId) && !document.getElementById(targetId).classList.contains('hidden')) return;
   state.currentView = targetId;
+
+  if (updateHistory && routeMap[targetId]) {
+    history.pushState({ targetId }, '', routeMap[targetId]);
+  }
 
   // Map sub-targets that live inside a parent view-section
   const nestedTargets = {
@@ -537,6 +562,7 @@ function renderTableSkeleton(rowCount = 6) {
       <td><span class="admin-skeleton-line"></span></td>
       <td><span class="admin-skeleton-line"></span></td>
       <td><span class="admin-skeleton-line"></span></td>
+      <td><span class="admin-skeleton-line"></span></td>
     </tr>`;
   }).join('');
 
@@ -592,6 +618,12 @@ function renderMemberTable() {
         <td>${escapeHtml(member.peringkat || '-')}</td>
         <td>${escapeHtml(formatDate(member.tanggal_bergabung))}</td>
         <td><span class="admin-status-pill" data-status="${escapeHtml(status)}">${escapeHtml(status)}</span></td>
+        <td>
+          <div style="display:flex;gap:8px;">
+            <button type="button" class="btn btn-secondary" style="padding:4px 8px;font-size:12px;" onclick="window.editMember('${escapeHtml(member.member_id)}')">Edit</button>
+            <button type="button" class="btn btn-secondary" style="padding:4px 8px;font-size:12px;color:#dc2626;border-color:#fca5a5;" onclick="window.deleteMember('${escapeHtml(member.member_id)}')">Hapus</button>
+          </div>
+        </td>
       </tr>`;
     })
     .join('');
@@ -600,6 +632,46 @@ function renderMemberTable() {
     memberTableCount.textContent = `${filteredRows.length} dari ${state.members.length} anggota`;
   }
 }
+
+window.editMember = function(memberId) {
+  const member = state.members.find(m => String(m.member_id) === String(memberId));
+  if (!member) return;
+
+  if (formAnggota) {
+    for (const [key, value] of Object.entries(member)) {
+      const field = formAnggota.elements[key];
+      if (field) field.value = value;
+    }
+  }
+
+  const headerTitle = document.querySelector('#section-form-anggota .admin-panel__title');
+  if (headerTitle) headerTitle.textContent = 'Edit Data Anggota';
+
+  switchView('section-form-anggota', false);
+  history.pushState({ targetId: 'section-form-anggota' }, '', `/admin/edit-anggota?id=${encodeURIComponent(memberId)}`);
+  
+  const el = document.getElementById('section-form-anggota');
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+window.deleteMember = async function(memberId) {
+  if (!confirm('Apakah Anda yakin ingin menghapus anggota ini? Operasi ini tidak dapat dibatalkan.')) return;
+  
+  try {
+    setMessage('Menghapus anggota...');
+    const payload = new URLSearchParams();
+    payload.append('action', 'delete_anggota');
+    payload.append('member_id', memberId);
+    
+    // We pass true to indicate it's an authenticated request, but usually form logic uses JSON.
+    // Let's use the standard api wrapper behavior.
+    const response = await postApi('/api/admin/anggota', { action: 'delete_anggota', member_id: memberId }, true);
+    setMessage(response.message || 'Anggota berhasil dihapus.');
+    refreshDashboard({ silent: true });
+  } catch (err) {
+    setMessage(err.message, true);
+  }
+};
 
 function renderSummary() {
   const total = Number(state.summary.total_anggota || 0);
@@ -912,7 +984,21 @@ async function initAdminPage() {
 
   await refreshDashboard({ silent: false, announceSuccess: false });
   startPolling();
-  setActiveNav('#section-overview');
+  
+  const path = window.location.pathname;
+  let targetId = Object.keys(routeMap).find(k => routeMap[k] === path);
+
+  if (path === '/admin/edit-anggota') {
+    const urlParams = new URLSearchParams(window.location.search);
+    const memberId = urlParams.get('id');
+    if (memberId) {
+      window.editMember(memberId);
+    } else {
+      switchView('section-form-anggota', false);
+    }
+  } else {
+    switchView(targetId || 'section-overview', false);
+  }
 }
 
 initAdminPage();
