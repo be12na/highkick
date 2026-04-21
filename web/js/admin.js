@@ -9,8 +9,6 @@ const msg = document.getElementById('admin-message');
 
 const sumTotal = document.getElementById('sum-total-anggota');
 const sumAktif = document.getElementById('sum-aktif');
-const sumTunggakanBulanan = document.getElementById('sum-tunggakan-bulanan');
-const sumTunggakanKas = document.getElementById('sum-tunggakan-kas');
 const tableAnggota = document.getElementById('table-anggota');
 
 const formAnggota = document.getElementById('form-anggota');
@@ -44,9 +42,7 @@ const viewSections = Array.from(document.querySelectorAll('.view-section'));
 const pageLoader = document.getElementById('page-loader');
 
 const chartMemberStatus = document.getElementById('chart-member-status');
-const chartFinanceBalance = document.getElementById('chart-finance-balance');
 const chartMemberStatusFallback = document.getElementById('chart-member-status-fallback');
-const chartFinanceBalanceFallback = document.getElementById('chart-finance-balance-fallback');
 
 const POLL_INTERVAL_MS = 45000;
 const TABLE_COLUMN_COUNT = 7;
@@ -72,7 +68,6 @@ const state = {
   isLoading: false,
   charts: {
     memberStatus: null,
-    financeBalance: null,
   },
   currentView: 'section-overview'
 };
@@ -607,8 +602,6 @@ function renderSummary() {
   const aktif = Number(state.summary.total_anggota_aktif || 0);
   const nonaktif = Number(state.summary.total_anggota_nonaktif || 0);
   const cuti = Number(state.summary.total_anggota_cuti || 0);
-  const outstandingBulanan = Number(state.summary.total_tunggakan_bulanan || 0);
-  const outstandingKas = Number(state.summary.total_tunggakan_kas || 0);
   const activeRate = total > 0 ? Math.round((aktif / total) * 100) : 0;
 
   if (sumTotal) {
@@ -617,19 +610,9 @@ function renderSummary() {
   if (sumAktif) {
     sumAktif.textContent = String(aktif);
   }
-  if (sumTunggakanBulanan) {
-    sumTunggakanBulanan.textContent = formatRupiah(outstandingBulanan);
-  }
-  if (sumTunggakanKas) {
-    sumTunggakanKas.textContent = formatRupiah(outstandingKas);
-  }
 
   if (heroActiveRate) {
     heroActiveRate.textContent = `${activeRate}%`;
-  }
-
-  if (heroTotalOutstanding) {
-    heroTotalOutstanding.textContent = formatRupiah(outstandingBulanan + outstandingKas);
   }
 
   if (heroRefreshState) {
@@ -668,20 +651,15 @@ function renderCharts() {
   const hasChartLibrary = typeof window.Chart !== 'undefined';
   if (!hasChartLibrary) {
     destroyChart('memberStatus');
-    destroyChart('financeBalance');
     showChartFallback(chartMemberStatus, chartMemberStatusFallback, 'Chart.js tidak termuat, jadi visual grafik tidak bisa ditampilkan sekarang.');
-    showChartFallback(chartFinanceBalance, chartFinanceBalanceFallback, 'Chart.js tidak termuat, sehingga grafik outstanding iuran menggunakan fallback teks.');
     return;
   }
 
   hideChartFallback(chartMemberStatus, chartMemberStatusFallback);
-  hideChartFallback(chartFinanceBalance, chartFinanceBalanceFallback);
 
   const totalAktif = Number(state.summary.total_anggota_aktif || 0);
   const totalCuti = Number(state.summary.total_anggota_cuti || 0);
   const totalNonaktif = Number(state.summary.total_anggota_nonaktif || 0);
-  const tunggakanBulanan = Number(state.summary.total_tunggakan_bulanan || 0);
-  const tunggakanKas = Number(state.summary.total_tunggakan_kas || 0);
 
   destroyChart('memberStatus');
   state.charts.memberStatus = new window.Chart(chartMemberStatus, {
@@ -705,41 +683,6 @@ function renderCharts() {
       plugins: {
         legend: {
           position: 'bottom',
-        },
-      },
-    },
-  });
-
-  destroyChart('financeBalance');
-  state.charts.financeBalance = new window.Chart(chartFinanceBalance, {
-    type: 'bar',
-    data: {
-      labels: ['Bulanan', 'Kas'],
-      datasets: [
-        {
-          label: 'Nilai tunggakan',
-          data: [tunggakanBulanan, tunggakanKas],
-          backgroundColor: ['rgba(37, 99, 235, 0.88)', 'rgba(245, 158, 11, 0.88)'],
-          borderRadius: 12,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            callback(value) {
-              return formatRupiah(value);
-            },
-          },
-        },
-      },
-      plugins: {
-        legend: {
-          display: false,
         },
       },
     },
