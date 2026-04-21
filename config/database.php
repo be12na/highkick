@@ -7,14 +7,12 @@ if (file_exists($configFile)) {
     define('DB_USER', $config['username'] ?? 'highkick_user');
     define('DB_PASS', $config['password'] ?? '');
     define('DB_CHARSET', $config['charset'] ?? 'utf8mb4');
-    define('INTERNAL_API_KEY', $config['internal_api_key'] ?? 'hk_internal_key_2026');
 } else {
     define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
     define('DB_NAME', getenv('DB_NAME') ?: 'highkick_db');
     define('DB_USER', getenv('DB_USER') ?: 'highkick_user');
     define('DB_PASS', getenv('DB_PASS') ?: '');
     define('DB_CHARSET', 'utf8mb4');
-    define('INTERNAL_API_KEY', getenv('INTERNAL_API_KEY') ?: 'hk_internal_key_2026');
 }
 
 class Database {

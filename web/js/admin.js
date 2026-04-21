@@ -36,17 +36,10 @@ const sidebar = document.getElementById('admin-sidebar');
 const sidebarBackdrop = document.getElementById('admin-sidebar-backdrop');
 const sidebarToggle = document.getElementById('btn-sidebar-toggle');
 const sidebarClose = document.getElementById('btn-sidebar-close');
-const navLinks = Array.from(document.querySelectorAll('.admin-nav__link'));
-const navSections = navLinks
-  .map((link) => {
-    const targetHash = link.getAttribute('href') || '';
-    return {
-      link,
-      targetHash,
-      section: targetHash ? document.querySelector(targetHash) : null,
-    };
-  })
-  .filter((item) => item.section);
+const navLinks = Array.from(document.querySelectorAll('.admin-nav__link[data-target], .admin-nav__sublink[data-target]'));
+const navToggles = Array.from(document.querySelectorAll('.nav-toggle'));
+const viewSections = Array.from(document.querySelectorAll('.view-section'));
+const pageLoader = document.getElementById('page-loader');
 
 const chartMemberStatus = document.getElementById('chart-member-status');
 const chartFinanceBalance = document.getElementById('chart-finance-balance');
@@ -79,11 +72,11 @@ const state = {
     financeBalance: null,
     dojoDistribution: null,
   },
-  sectionObserver: null,
+  currentView: 'section-overview'
 };
 
 btnLogout?.addEventListener('click', () => {
-  localStorage.removeItem('admin_api_key');
+  localStorage.removeItem('admin_token');
   localStorage.removeItem('admin_profile');
   stopPolling();
   window.location.href = '/index.html';
@@ -101,14 +94,58 @@ sidebarBackdrop?.addEventListener('click', () => {
   toggleSidebar(false);
 });
 
+navToggles.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', !isExpanded);
+  });
+});
+
 navLinks.forEach((link) => {
-  link.addEventListener('click', () => {
-    setActiveNav(link.getAttribute('href'));
-    if (window.innerWidth <= 1080) {
-      toggleSidebar(false);
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = link.dataset.target;
+    if (target) {
+      switchView(target);
     }
   });
 });
+
+async function switchView(targetId) {
+  if (state.currentView === targetId && document.getElementById(targetId) && !document.getElementById(targetId).classList.contains('hidden')) return;
+  state.currentView = targetId;
+
+  // Set active link
+  navLinks.forEach((link) => {
+    const isActive = link.dataset.target === targetId;
+    link.classList.toggle('is-active', isActive);
+    if (isActive) link.setAttribute('aria-current', 'page');
+    else link.removeAttribute('aria-current');
+  });
+
+  if (window.innerWidth <= 1080) {
+    toggleSidebar(false);
+  }
+
+  // Show loader and hide all sections
+  viewSections.forEach(sec => sec.classList.add('hidden'));
+  if (pageLoader) pageLoader.classList.remove('hidden');
+
+  // Short delay to simulate loading or allow fetch
+  await new Promise(r => setTimeout(r, 400));
+  
+  if (pageLoader) pageLoader.classList.add('hidden');
+  
+  // Show target section and any shared sections if not explicitly hidden in this view
+  const targetSec = document.getElementById(targetId);
+  if (targetSec) targetSec.classList.remove('hidden');
+  
+  // Also show shared sections (like KPIs) if we are on dashboard sections
+  const sharedKpis = document.getElementById('section-kpis');
+  if (sharedKpis && (targetId === 'section-overview' || targetId === 'section-analytics')) {
+    sharedKpis.classList.remove('hidden');
+  }
+}
 
 window.addEventListener('resize', () => {
   syncSidebarMode();
@@ -265,38 +302,7 @@ function syncSidebarMode() {
 }
 
 function initSectionObserver() {
-  if (!navSections.length || typeof window.IntersectionObserver === 'undefined') {
-    return;
-  }
-
-  if (state.sectionObserver) {
-    state.sectionObserver.disconnect();
-  }
-
-  state.sectionObserver = new window.IntersectionObserver(
-    (entries) => {
-      const visibleEntries = entries
-        .filter((entry) => entry.isIntersecting)
-        .sort((left, right) => right.intersectionRatio - left.intersectionRatio);
-
-      if (!visibleEntries.length) {
-        return;
-      }
-
-      const activeSection = navSections.find((item) => item.section === visibleEntries[0].target);
-      if (activeSection) {
-        setActiveNav(activeSection.targetHash);
-      }
-    },
-    {
-      rootMargin: '-20% 0px -55% 0px',
-      threshold: [0.2, 0.35, 0.55],
-    },
-  );
-
-  navSections.forEach((item) => {
-    state.sectionObserver.observe(item.section);
-  });
+  // Replaced by SPA logic switchView
 }
 
 function setMessage(text, isError = false) {
@@ -817,8 +823,8 @@ async function refreshDashboard({ silent = false, announceSuccess = false } = {}
 }
 
 async function initAdminPage() {
-  const adminKey = localStorage.getItem('admin_api_key');
-  if (!adminKey) {
+  const adminToken = localStorage.getItem('admin_token');
+  if (!adminToken) {
     window.location.href = '/index.html';
     return;
   }

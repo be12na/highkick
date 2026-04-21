@@ -9,7 +9,7 @@
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, X-Admin-Api-Key');
+header('Access-Control-Allow-Headers: Content-Type, X-Admin-Token');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
@@ -79,31 +79,31 @@ try {
             $result = getDashboardAnggota($data);
             break;
         case 'getDashboardAdmin':
-            validateAdminKey(resolveAdminApiKey($input));
+            validateAdminToken(resolveAdminToken($input));
             $result = getDashboardAdmin();
             break;
         case 'saveAnggota':
-            validateAdminKey(resolveAdminApiKey($input));
+            validateAdminToken(resolveAdminToken($input));
             $result = saveAnggota($data);
             break;
         case 'listAnggota':
-            validateAdminKey(resolveAdminApiKey($input));
+            validateAdminToken(resolveAdminToken($input));
             $result = listAnggota($data);
             break;
         case 'updateSettingIuran':
-            validateAdminKey(resolveAdminApiKey($input));
+            validateAdminToken(resolveAdminToken($input));
             $result = updateSettingIuran($data);
             break;
         case 'getSettingIuran':
-            validateAdminKey(resolveAdminApiKey($input));
+            validateAdminToken(resolveAdminToken($input));
             $result = getSettingIuran();
             break;
         case 'saveIuranBulanan':
-            validateAdminKey(resolveAdminApiKey($input));
+            validateAdminToken(resolveAdminToken($input));
             $result = saveIuranBulanan($data);
             break;
         case 'saveIuranKas':
-            validateAdminKey(resolveAdminApiKey($input));
+            validateAdminToken(resolveAdminToken($input));
             $result = saveIuranKas($data);
             break;
         default:
@@ -158,18 +158,22 @@ function validateNominal($value, $fieldName) {
     }
 }
 
-function validateAdminKey($providedKey) {
-    if (normalize($providedKey) !== INTERNAL_API_KEY) {
-        throw new Exception('Internal API key tidak valid');
+function validateAdminToken($providedToken) {
+    if (!$providedToken) {
+        throw new Exception('Akses ditolak. Token tidak ditemukan.');
+    }
+    $row = db()->fetchOne("SELECT admin_id FROM admin_user WHERE session_token = ? AND status_aktif != 'false'", [normalize($providedToken)]);
+    if (!$row) {
+        throw new Exception('Sesi admin tidak valid atau sudah kedaluwarsa.');
     }
 }
 
-function resolveAdminApiKey($input) {
-    $headerKey = $_SERVER['HTTP_X_ADMIN_API_KEY'] ?? '';
+function resolveAdminToken($input) {
+    $headerKey = $_SERVER['HTTP_X_ADMIN_TOKEN'] ?? '';
     if ($headerKey !== '') {
         return $headerKey;
     }
-    return $input['internal_api_key'] ?? '';
+    return $input['admin_token'] ?? '';
 }
 
 function checkRateLimit($identifier) {
@@ -278,6 +282,9 @@ function loginAdmin($data) {
 
     clearFailedAttempts($email);
 
+    $token = bin2hex(random_bytes(32));
+    db()->execute("UPDATE admin_user SET session_token = ? WHERE admin_id = ?", [$token, $row['admin_id']]);
+
     return [
         'login' => true,
         'role' => 'admin',
@@ -286,6 +293,7 @@ function loginAdmin($data) {
             'nama_admin' => $row['nama_admin'],
             'email_admin' => $row['email_admin'],
             'role' => $row['role'],
+            'admin_token' => $token
         ],
     ];
 }

@@ -46,57 +46,58 @@
           <nav class="admin-nav" aria-label="Navigasi admin utama">
             <p class="admin-nav__caption">Navigasi utama</p>
 
-            <a class="admin-nav__link" href="#section-overview">
-              <span class="admin-nav__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <title>Ikon ikhtisar</title>
-                  <path d="M4 12.75 12 5l8 7.75v6.75A1.5 1.5 0 0 1 18.5 21h-3.25v-5.5h-6.5V21H5.5A1.5 1.5 0 0 1 4 19.5Z" fill="currentColor" />
-                </svg>
-              </span>
-              <span class="admin-nav__content">
-                <strong>Ikhtisar</strong>
-                <small>Ringkasan KPI dan refresh utama</small>
-              </span>
-            </a>
+            <div class="nav-group">
+              <a class="admin-nav__link is-active" href="#section-overview" data-target="section-overview">
+                <span class="admin-nav__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false"><path d="M4 12.75 12 5l8 7.75v6.75A1.5 1.5 0 0 1 18.5 21h-3.25v-5.5h-6.5V21H5.5A1.5 1.5 0 0 1 4 19.5Z" fill="currentColor" /></svg>
+                </span>
+                <span class="admin-nav__content">
+                  <strong>Ikhtisar</strong>
+                </span>
+              </a>
+            </div>
 
-            <a class="admin-nav__link" href="#section-analytics">
-              <span class="admin-nav__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <title>Ikon visualisasi</title>
-                  <path d="M5.5 19A1.5 1.5 0 0 1 4 17.5v-11A1.5 1.5 0 0 1 5.5 5h13A1.5 1.5 0 0 1 20 6.5v11a1.5 1.5 0 0 1-1.5 1.5Zm1-3.5h2.5v-4H6.5Zm4.25 0h2.5V8.5h-2.5Zm4.25 0h2.5v-6H15Z" fill="currentColor" />
-                </svg>
-              </span>
-              <span class="admin-nav__content">
-                <strong>Visualisasi</strong>
-                <small>Status anggota, iuran, dan dojo</small>
-              </span>
-            </a>
+            <div class="nav-group">
+              <a class="admin-nav__link" href="#section-analytics" data-target="section-analytics">
+                <span class="admin-nav__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false"><path d="M5.5 19A1.5 1.5 0 0 1 4 17.5v-11A1.5 1.5 0 0 1 5.5 5h13A1.5 1.5 0 0 1 20 6.5v11a1.5 1.5 0 0 1-1.5 1.5Zm1-3.5h2.5v-4H6.5Zm4.25 0h2.5V8.5h-2.5Zm4.25 0h2.5v-6H15Z" fill="currentColor" /></svg>
+                </span>
+                <span class="admin-nav__content">
+                  <strong>Visualisasi</strong>
+                </span>
+              </a>
+            </div>
 
-            <a class="admin-nav__link" href="#section-anggota">
-              <span class="admin-nav__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <title>Ikon anggota</title>
-                  <path d="M12 4a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7Zm-6 14a5.5 5.5 0 0 1 11 0v1H6Zm12.5-6.75a2.75 2.75 0 1 1 0 5.5A2.75 2.75 0 0 1 18.5 11.25ZM17 19.5a4.44 4.44 0 0 1 2.5-4 4.5 4.5 0 0 1 4.5 4v.5H17Z" fill="currentColor" />
-                </svg>
-              </span>
-              <span class="admin-nav__content">
-                <strong>Anggota</strong>
-                <small>Tabel, filter, dan pencarian cepat</small>
-              </span>
-            </a>
+            <!-- Hierarchical Menu -->
+            <div class="nav-group has-children">
+              <button class="admin-nav__link nav-toggle" type="button" aria-expanded="false">
+                <span class="admin-nav__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false"><path d="M12 4a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7Zm-6 14a5.5 5.5 0 0 1 11 0v1H6Zm12.5-6.75a2.75 2.75 0 1 1 0 5.5A2.75 2.75 0 0 1 18.5 11.25ZM17 19.5a4.44 4.44 0 0 1 2.5-4 4.5 4.5 0 0 1 4.5 4v.5H17Z" fill="currentColor" /></svg>
+                </span>
+                <span class="admin-nav__content">
+                  <strong>Data Master</strong>
+                </span>
+                <span class="nav-chevron">▼</span>
+              </button>
+              <div class="nav-submenu">
+                <a class="admin-nav__sublink" href="#section-anggota" data-target="section-anggota">Daftar Anggota</a>
+              </div>
+            </div>
 
-            <a class="admin-nav__link" href="#section-operations">
-              <span class="admin-nav__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <title>Ikon operasional</title>
-                  <path d="M14.5 4a3.5 3.5 0 0 1 3.42 4.25l2.5 2.5a1.25 1.25 0 1 1-1.77 1.77l-2.5-2.5A3.5 3.5 0 1 1 14.5 4ZM6 13h6a2 2 0 0 1 2 2v5H4v-5a2 2 0 0 1 2-2Zm11.5 1.5A2.5 2.5 0 0 1 20 17v3h-4v-1a4.2 4.2 0 0 0-1-2.7 2.5 2.5 0 0 1 2.5-1.8Z" fill="currentColor" />
-                </svg>
-              </span>
-              <span class="admin-nav__content">
-                <strong>Operasional</strong>
-                <small>Form anggota, setting, dan pembayaran</small>
-              </span>
-            </a>
+            <div class="nav-group has-children">
+              <button class="admin-nav__link nav-toggle" type="button" aria-expanded="false">
+                <span class="admin-nav__icon" aria-hidden="true">
+                   <svg viewBox="0 0 24 24" focusable="false"><path d="M14.5 4a3.5 3.5 0 0 1 3.42 4.25l2.5 2.5a1.25 1.25 0 1 1-1.77 1.77l-2.5-2.5A3.5 3.5 0 1 1 14.5 4ZM6 13h6a2 2 0 0 1 2 2v5H4v-5a2 2 0 0 1 2-2Zm11.5 1.5A2.5 2.5 0 0 1 20 17v3h-4v-1a4.2 4.2 0 0 0-1-2.7 2.5 2.5 0 0 1 2.5-1.8Z" fill="currentColor" /></svg>
+                </span>
+                <span class="admin-nav__content">
+                  <strong>Operasional</strong>
+                </span>
+                <span class="nav-chevron">▼</span>
+              </button>
+              <div class="nav-submenu">
+                <a class="admin-nav__sublink" href="#section-operations" data-target="section-operations">Form & Transaksi</a>
+              </div>
+            </div>
           </nav>
 
           <section class="admin-sidebar__shortcut" aria-label="Catatan navigasi operasional">
@@ -145,64 +146,65 @@
           </button>
         </header>
 
-        <section id="section-overview" class="admin-hero">
-          <div class="admin-hero__copy">
-            <p class="admin-hero__kicker">Dashboard operasional dojo</p>
-            <h2 class="admin-hero__title">Lihat performa anggota dan tunggakan dalam tampilan yang lebih cepat dibaca.</h2>
-            <p class="admin-hero__lead">
-              Area ini merangkum kesehatan keanggotaan, outstanding iuran, dan aktivitas input admin tanpa mengubah endpoint maupun alur form yang sudah ada.
-            </p>
-            <div class="admin-hero__actions">
-              <a class="btn admin-hero__primary-link" href="#section-anggota">Buka tabel anggota</a>
-              <button class="btn btn-secondary" type="button" data-refresh-dashboard>Segarkan live data</button>
+        <!-- Unified Loading Indicator -->
+        <div id="page-loader" class="page-loader hidden">
+          <div class="spinner"></div> Mengambil data...
+        </div>
+
+        <div id="view-container">
+          <section id="section-overview" class="admin-hero view-section">
+            <div class="admin-hero__copy">
+              <p class="admin-hero__kicker">Dashboard operasional dojo</p>
+              <h2 class="admin-hero__title">Lihat performa anggota dan tunggakan dalam tampilan yang lebih cepat dibaca.</h2>
+              <p class="admin-hero__lead">
+                Area ini merangkum kesehatan keanggotaan, outstanding iuran, dan aktivitas input admin tanpa mengubah endpoint maupun alur form yang sudah ada.
+              </p>
+              <div class="admin-hero__actions">
+                <button class="btn btn-secondary" type="button" data-refresh-dashboard>Segarkan live data</button>
+              </div>
             </div>
-          </div>
 
-          <div class="admin-hero__metrics">
-            <article class="admin-hero-stat">
-              <span class="admin-hero-stat__label">Coverage aktif</span>
-              <strong id="hero-active-rate" class="admin-hero-stat__value">-</strong>
-              <p class="admin-hero-stat__meta">Persentase anggota aktif dari seluruh data anggota terdaftar.</p>
+            <div class="admin-hero__metrics">
+              <article class="admin-hero-stat">
+                <span class="admin-hero-stat__label">Coverage aktif</span>
+                <strong id="hero-active-rate" class="admin-hero-stat__value">-</strong>
+                <p class="admin-hero-stat__meta">Persentase anggota aktif dari seluruh data anggota terdaftar.</p>
+              </article>
+              <article class="admin-hero-stat">
+                <span class="admin-hero-stat__label">Total outstanding</span>
+                <strong id="hero-total-outstanding" class="admin-hero-stat__value">-</strong>
+                <p class="admin-hero-stat__meta">Gabungan tunggakan bulanan dan kas untuk prioritas follow-up.</p>
+              </article>
+              <article class="admin-hero-stat">
+                <span class="admin-hero-stat__label">Mode refresh</span>
+                <strong id="hero-refresh-state" class="admin-hero-stat__value">-</strong>
+                <p class="admin-hero-stat__meta">Auto refresh berbasis AJAX polling.</p>
+              </article>
+            </div>
+          </section>
+
+          <p id="admin-message" class="message admin-message" role="status" aria-live="polite"></p>
+
+          <section id="section-kpis" class="admin-kpi-grid view-section view-section-shared" aria-label="Ringkasan KPI admin">
+            <article class="admin-kpi-card flaz-card-green" data-metric-card>
+              <span class="admin-kpi-card__eyebrow">Total anggota</span>
+              <strong id="sum-total-anggota" class="admin-kpi-card__value">-</strong>
             </article>
-            <article class="admin-hero-stat">
-              <span class="admin-hero-stat__label">Total outstanding</span>
-              <strong id="hero-total-outstanding" class="admin-hero-stat__value">-</strong>
-              <p class="admin-hero-stat__meta">Gabungan tunggakan bulanan dan kas untuk prioritas follow-up.</p>
+            <article class="admin-kpi-card flaz-card-red" data-metric-card>
+              <span class="admin-kpi-card__eyebrow">Anggota aktif</span>
+              <strong id="sum-aktif" class="admin-kpi-card__value">-</strong>
             </article>
-            <article class="admin-hero-stat">
-              <span class="admin-hero-stat__label">Mode refresh</span>
-              <strong id="hero-refresh-state" class="admin-hero-stat__value">-</strong>
-              <p class="admin-hero-stat__meta">Auto refresh berbasis AJAX polling, aman untuk deploy static/cPanel.</p>
+            <article class="admin-kpi-card flaz-card-yellow" data-metric-card>
+              <span class="admin-kpi-card__eyebrow">Tunggakan bulanan</span>
+              <strong id="sum-tunggakan-bulanan" class="admin-kpi-card__value">-</strong>
             </article>
-          </div>
-        </section>
+            <article class="admin-kpi-card flaz-card-purple" data-metric-card>
+              <span class="admin-kpi-card__eyebrow">Tunggakan kas</span>
+              <strong id="sum-tunggakan-kas" class="admin-kpi-card__value">-</strong>
+            </article>
+          </section>
 
-        <p id="admin-message" class="message admin-message" role="status" aria-live="polite"></p>
-
-        <section class="admin-kpi-grid" aria-label="Ringkasan KPI admin">
-          <article class="admin-kpi-card" data-metric-card>
-            <span class="admin-kpi-card__eyebrow">Total anggota</span>
-            <strong id="sum-total-anggota" class="admin-kpi-card__value">-</strong>
-            <p class="admin-kpi-card__meta">Jumlah seluruh anggota yang tercatat di sistem.</p>
-          </article>
-          <article class="admin-kpi-card" data-metric-card>
-            <span class="admin-kpi-card__eyebrow">Anggota aktif</span>
-            <strong id="sum-aktif" class="admin-kpi-card__value">-</strong>
-            <p class="admin-kpi-card__meta">Anggota aktif siap latihan dan penagihan rutin.</p>
-          </article>
-          <article class="admin-kpi-card" data-metric-card>
-            <span class="admin-kpi-card__eyebrow">Tunggakan bulanan</span>
-            <strong id="sum-tunggakan-bulanan" class="admin-kpi-card__value">-</strong>
-            <p class="admin-kpi-card__meta">Outstanding iuran bulanan yang belum tertutup.</p>
-          </article>
-          <article class="admin-kpi-card" data-metric-card>
-            <span class="admin-kpi-card__eyebrow">Tunggakan kas</span>
-            <strong id="sum-tunggakan-kas" class="admin-kpi-card__value">-</strong>
-            <p class="admin-kpi-card__meta">Outstanding iuran kas untuk kontrol keuangan dojo.</p>
-          </article>
-        </section>
-
-        <section id="section-analytics" class="admin-analytics-grid" aria-label="Visualisasi dashboard admin">
+          <section id="section-analytics" class="admin-analytics-grid view-section hidden" aria-label="Visualisasi dashboard admin">
           <article class="admin-panel admin-panel--chart">
             <div class="admin-panel__header">
               <div>
@@ -246,7 +248,7 @@
           </article>
         </section>
 
-        <section id="section-anggota" class="admin-panel admin-panel--table">
+          <section id="section-anggota" class="admin-panel admin-panel--table view-section hidden">
           <div class="admin-panel__header admin-panel__header--stack">
             <div>
               <p class="admin-panel__eyebrow">Manajemen data anggota</p>
@@ -321,7 +323,7 @@
           </div>
         </section>
 
-        <section id="section-operations" class="admin-operations" aria-label="Panel operasional admin">
+          <section id="section-operations" class="admin-operations view-section hidden" aria-label="Panel operasional admin">
           <header class="admin-operations__intro admin-panel">
             <div class="admin-panel__header admin-panel__header--stack">
               <div>
@@ -492,6 +494,7 @@
             </article>
           </div>
         </section>
+        </div>
       </main>
     </div>
 

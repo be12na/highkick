@@ -19,7 +19,7 @@ Base URL contoh:
 ## Header penting
 
 - `Content-Type: application/json`
-- Untuk route admin: `x-admin-api-key: <INTERNAL_API_KEY>`
+- Untuk route admin: `x-admin-token: <SESSION_TOKEN_DARI_LOGIN>`
 
 ## Endpoint Frontend → Worker
 

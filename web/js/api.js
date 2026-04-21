@@ -11,8 +11,8 @@ async function postApi(path, payload, withAdminKey = false) {
     };
 
     if (withAdminKey) {
-        const adminKey = localStorage.getItem('admin_api_key') || '';
-        headers['x-admin-api-key'] = adminKey;
+        const adminToken = localStorage.getItem('admin_token') || '';
+        headers['x-admin-token'] = adminToken;
     }
 
     const baseUrl = '';

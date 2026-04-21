@@ -2,96 +2,137 @@
 <!--
   Tujuan file/module: Merender dashboard anggota untuk melihat profil dan status iuran.
   Pemakai oleh siapa: Browser anggota setelah autentikasi berhasil.
-  Dependensi utama: /web/css/style.css, /web/js/app.js, /web/js/api.js, /web/js/anggota.js.
-  Daftar fungsi public/utama: Menampilkan branding dashboard anggota, profil, dan riwayat iuran.
-  Side effect penting: Memuat aset logo lokal dan menampilkan data anggota dari JavaScript.
+  Dependensi utama: /web/css/style.css, /web/css/admin.css, /web/js/app.js, /web/js/api.js, /web/js/anggota.js.
+  Daftar fungsi public/utama: Menampilkan branding dashboard anggota, profil, dan riwayat iuran dengan UI SPA modern.
 -->
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard Anggota - HIGHKICK TAEKWONDO JOGJA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/web/css/style.css" />
+    <link rel="stylesheet" href="/web/css/admin.css" />
   </head>
-  <body>
-    <main class="container">
-      <header class="topbar">
-        <div class="brand-block">
-          <img
-            class="brand-logo"
-            src="/web/assets/highkick-logo.jpg"
-            alt="Logo HIGHKICK TAEKWONDO JOGJA"
-            decoding="async"
-          />
-          <div class="brand-copy">
-            <p class="brand-kicker">HIGHKICK TAEKWONDO JOGJA</p>
-            <h1 class="brand-title">Dashboard Anggota</h1>
-            <p class="brand-subtitle">Pantau profil, status sabuk, dan riwayat iuran.</p>
-          </div>
+  <body class="admin-page">
+    <div class="admin-shell">
+      <aside id="admin-sidebar" class="admin-sidebar" aria-label="Sidebar dashboard anggota">
+          <div class="admin-sidebar__inner">
+            <div class="admin-sidebar__header">
+              <div class="brand-block admin-brand-block">
+                <img class="brand-logo" src="/web/assets/highkick-logo.jpg" alt="Logo" decoding="async" />
+                <div class="brand-copy">
+                  <p class="brand-kicker">ANGGOTA</p>
+                  <h1 class="brand-title">Dojang Portal</h1>
+                  <p class="brand-subtitle">Pantau profil dan iuran.</p>
+                </div>
+              </div>
+              <button id="btn-sidebar-close" class="admin-sidebar__close" type="button"><span aria-hidden="true">×</span></button>
+            </div>
+
+          <nav class="admin-nav" aria-label="Navigasi anggota">
+            <p class="admin-nav__caption">Navigasi utama</p>
+            <div class="nav-group">
+              <a class="admin-nav__link is-active" href="#section-profil" data-target="section-profil">
+                <span class="admin-nav__icon"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 4a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7Zm-6 14a5.5 5.5 0 0 1 11 0v1H6Zm12.5-6.75a2.75 2.75 0 1 1 0 5.5A2.75 2.75 0 0 1 18.5 11.25ZM17 19.5a4.44 4.44 0 0 1 2.5-4 4.5 4.5 0 0 1 4.5 4v.5H17Z" fill="currentColor" /></svg></span>
+                <span class="admin-nav__content"><strong>Profil & Status</strong></span>
+              </a>
+            </div>
+
+            <div class="nav-group has-children">
+              <button class="admin-nav__link nav-toggle" type="button" aria-expanded="false">
+                <span class="admin-nav__icon"><svg viewBox="0 0 24 24" focusable="false"><path d="M5.5 19A1.5 1.5 0 0 1 4 17.5v-11A1.5 1.5 0 0 1 5.5 5h13A1.5 1.5 0 0 1 20 6.5v11a1.5 1.5 0 0 1-1.5 1.5Zm1-3.5h2.5v-4H6.5Zm4.25 0h2.5V8.5h-2.5Zm4.25 0h2.5v-6H15Z" fill="currentColor" /></svg></span>
+                <span class="admin-nav__content"><strong>Riwayat Iuran</strong></span>
+                <span class="nav-chevron">▼</span>
+              </button>
+              <div class="nav-submenu">
+                <a class="admin-nav__sublink" href="#section-iuran-bulanan" data-target="section-iuran-bulanan">Iuran Bulanan</a>
+                <a class="admin-nav__sublink" href="#section-iuran-kas" data-target="section-iuran-kas">Iuran Kas</a>
+              </div>
+            </div>
+          </nav>
+
+          <button id="btn-logout-anggota" class="btn btn-secondary admin-sidebar__logout" type="button">Logout</button>
         </div>
-        <button id="btn-logout-anggota" class="btn btn-secondary" type="button">Logout</button>
-      </header>
+      </aside>
 
-      <section class="grid-three">
-        <article class="card">
-          <h2>Profil</h2>
-          <p><strong>Nama:</strong> <span id="profil-nama">-</span></p>
-          <p><strong>Nomor:</strong> <span id="profil-nomor">-</span></p>
-          <p><strong>Dojo:</strong> <span id="profil-dojo">-</span></p>
-          <p><strong>Tanggal Bergabung:</strong> <span id="profil-tgl">-</span></p>
-          <p><strong>Status:</strong> <span id="profil-status">-</span></p>
-        </article>
+      <button id="admin-sidebar-backdrop" class="admin-sidebar-backdrop" type="button" hidden></button>
 
-        <article class="card">
-          <h2>Status Bela Diri</h2>
-          <p><strong>Sabuk:</strong> <span id="profil-sabuk">-</span></p>
-          <p><strong>Peringkat:</strong> <span id="profil-peringkat">-</span></p>
-        </article>
+      <main class="admin-main">
+        <header class="admin-mobilebar">
+          <button id="btn-sidebar-toggle" class="admin-mobilebar__toggle" type="button">
+            <span class="admin-mobilebar__toggle-icon" aria-hidden="true"><span></span><span></span><span></span></span>
+            <span class="admin-mobilebar__toggle-label">Menu</span>
+          </button>
+        </header>
 
-        <article class="card">
-          <h2>Ringkasan Iuran</h2>
-          <p><strong>Total Tagihan:</strong> <span id="sum-tagihan">-</span></p>
-          <p><strong>Total Bayar:</strong> <span id="sum-bayar">-</span></p>
-          <p><strong>Total Tunggakan:</strong> <span id="sum-tunggakan">-</span></p>
-        </article>
-      </section>
-
-      <section class="card">
-        <h2>Riwayat Iuran Bulanan</h2>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Periode</th>
-                <th>Tagihan</th>
-                <th>Bayar</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="table-bulanan"></tbody>
-          </table>
+        <div id="page-loader" class="page-loader hidden">
+          <div class="spinner"></div> Mengambil data...
         </div>
-      </section>
 
-      <section class="card">
-        <h2>Riwayat Iuran Kas</h2>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Periode</th>
-                <th>Tagihan</th>
-                <th>Bayar</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="table-kas"></tbody>
-          </table>
+        <div id="view-container">
+          <!-- PROFIL SECTION -->
+          <section id="section-profil" class="view-section">
+            <h2 class="admin-panel__title" style="margin-bottom: 20px;">Selamat datang, <span id="profil-nama-greet">Anggota</span>!</h2>
+            
+            <section class="admin-kpi-grid view-section-shared" aria-label="Ringkasan Iuran">
+              <article class="admin-kpi-card flaz-card-purple" data-metric-card>
+                <span class="admin-kpi-card__eyebrow">Total Tagihan</span>
+                <strong id="sum-tagihan" class="admin-kpi-card__value">-</strong>
+              </article>
+              <article class="admin-kpi-card flaz-card-green" data-metric-card>
+                <span class="admin-kpi-card__eyebrow">Total Bayar</span>
+                <strong id="sum-bayar" class="admin-kpi-card__value">-</strong>
+              </article>
+              <article class="admin-kpi-card flaz-card-red" data-metric-card>
+                <span class="admin-kpi-card__eyebrow">Sisa Tunggakan</span>
+                <strong id="sum-tunggakan" class="admin-kpi-card__value">-</strong>
+              </article>
+            </section>
+
+            <div class="admin-kpi-grid" style="grid-template-columns: repeat(2, 1fr); margin-top: 24px;">
+              <article class="admin-panel">
+                <div class="admin-panel__header"><div><h3 class="admin-panel__title">Informasi Pribadi</h3></div></div>
+                <p style="margin:8px 0; color:var(--admin-text-muted);"><strong>Nama:</strong> <span id="profil-nama" style="color:var(--admin-text);">-</span></p>
+                <p style="margin:8px 0; color:var(--admin-text-muted);"><strong>Nomor:</strong> <span id="profil-nomor" style="color:var(--admin-text);">-</span></p>
+                <p style="margin:8px 0; color:var(--admin-text-muted);"><strong>Dojo:</strong> <span id="profil-dojo" style="color:var(--admin-text);">-</span></p>
+                <p style="margin:8px 0; color:var(--admin-text-muted);"><strong>Bergabung:</strong> <span id="profil-tgl" style="color:var(--admin-text);">-</span></p>
+                <p style="margin:8px 0; color:var(--admin-text-muted);"><strong>Status:</strong> <span id="profil-status" class="admin-status-pill">-</span></p>
+              </article>
+              <article class="admin-panel">
+                <div class="admin-panel__header"><div><h3 class="admin-panel__title">Status Bela Diri</h3></div></div>
+                <p style="margin:8px 0; color:var(--admin-text-muted);"><strong>Sabuk:</strong> <span id="profil-sabuk" style="color:var(--admin-text);">-</span></p>
+                <p style="margin:8px 0; color:var(--admin-text-muted);"><strong>Peringkat:</strong> <span id="profil-peringkat" style="color:var(--admin-text);">-</span></p>
+              </article>
+            </div>
+            
+            <p id="anggota-message" class="message admin-message hidden" style="margin-top:20px;"></p>
+          </section>
+
+          <!-- IURAN BULANAN SECTION -->
+          <section id="section-iuran-bulanan" class="view-section hidden admin-panel admin-panel--table">
+            <div class="admin-panel__header"><div><h3 class="admin-panel__title">Riwayat Iuran Bulanan</h3></div></div>
+            <div class="table-wrap admin-table-wrap">
+              <table class="admin-table">
+                <thead><tr><th>Periode</th><th>Tagihan</th><th>Bayar</th><th>Status</th></tr></thead>
+                <tbody id="table-bulanan"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- IURAN KAS SECTION -->
+          <section id="section-iuran-kas" class="view-section hidden admin-panel admin-panel--table">
+            <div class="admin-panel__header"><div><h3 class="admin-panel__title">Riwayat Iuran Kas</h3></div></div>
+            <div class="table-wrap admin-table-wrap">
+              <table class="admin-table">
+                <thead><tr><th>Periode</th><th>Tagihan</th><th>Bayar</th><th>Status</th></tr></thead>
+                <tbody id="table-kas"></tbody>
+              </table>
+            </div>
+          </section>
         </div>
-      </section>
-
-      <p id="anggota-message" class="message"></p>
-    </main>
+      </main>
+    </div>
 
     <script src="/web/js/app.js"></script>
     <script src="/web/js/api.js"></script>

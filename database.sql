@@ -27,6 +27,7 @@ CREATE TABLE `admin_user` (
   `password_pin` varchar(255) NOT NULL,
   `role` varchar(20) NOT NULL DEFAULT 'admin',
   `status_aktif` varchar(10) NOT NULL DEFAULT 'true',
+  `session_token` varchar(255) DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`admin_id`),

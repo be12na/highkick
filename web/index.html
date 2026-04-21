@@ -2,59 +2,86 @@
 <!--
   Tujuan file/module: Merender halaman login utama aplikasi Highkick Taekwondo.
   Pemakai oleh siapa: Browser user sebelum masuk ke dashboard admin atau anggota.
-  Dependensi utama: /web/css/style.css, /web/js/app.js, /web/js/api.js, /web/js/auth.js.
-  Daftar fungsi public/utama: Menampilkan branding, pilihan jenis login, dan form login admin/anggota.
-  Side effect penting: Memuat aset logo lokal dan menjalankan alur autentikasi di sisi klien.
+  Dependensi utama: /web/css/style.css, /web/css/login.css, /web/js/app.js, /web/js/api.js, /web/js/auth.js.
+  Daftar fungsi public/utama: Menampilkan branding, pilihan jenis login, dan form login admin/anggota dengan validasi real-time.
 -->
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HIGHKICK TAEKWONDO JOGJA - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/web/css/style.css" />
+    <link rel="stylesheet" href="/web/css/login.css" />
   </head>
   <body>
-    <main class="container center-screen">
-      <section class="card login-card">
-        <div class="brand-block brand-block--center">
-          <img
-            class="brand-logo"
-            src="/web/assets/highkick-logo.jpg"
-            alt="Logo HIGHKICK TAEKWONDO JOGJA"
-            decoding="async"
-          />
-          <div class="brand-copy">
-            <p class="brand-kicker">Official Dojang</p>
-            <h1 class="brand-title">HIGHKICK TAEKWONDO JOGJA</h1>
-            <p class="brand-subtitle">Portal login anggota dan admin.</p>
+    <main class="login-wrapper">
+      <div class="login-container">
+        <section class="card login-card modern-login">
+          <div class="brand-block brand-block--center">
+            <img
+              class="brand-logo"
+              src="/web/assets/highkick-logo.jpg"
+              alt="Logo HIGHKICK TAEKWONDO JOGJA"
+              decoding="async"
+            />
+            <div class="brand-copy">
+              <h1 class="brand-title">Welcome Back!</h1>
+              <p class="brand-subtitle">Silakan login ke portal Highkick Taekwondo</p>
+            </div>
           </div>
-        </div>
-        <p class="muted">Pilih jenis login</p>
-        <div class="grid-two">
-          <button id="btn-show-anggota" class="btn" type="button">Login Anggota</button>
-          <button id="btn-show-admin" class="btn btn-secondary" type="button">Login Admin</button>
-        </div>
+          
+          <div class="login-tabs">
+            <button id="btn-show-anggota" class="login-tab active" type="button">Anggota</button>
+            <button id="btn-show-admin" class="login-tab" type="button">Admin</button>
+          </div>
 
-        <form id="form-login-anggota" class="form-block hidden">
-          <h2>Login Anggota</h2>
-          <label>Nomor Anggota</label>
-          <input name="nomor_anggota" placeholder="Contoh: TKD-001" required />
-          <button class="btn" type="submit">Masuk</button>
-        </form>
+          <form id="form-login-anggota" class="form-block">
+            <div class="input-group">
+              <label for="nomor_anggota">Nomor Anggota</label>
+              <input id="nomor_anggota" name="nomor_anggota" placeholder="Contoh: TKD-001" autocomplete="username" />
+              <div class="validation-msg" id="msg-nomor-anggota"></div>
+            </div>
+            <div class="remember-me">
+              <input type="checkbox" id="remember-anggota" name="remember" />
+              <label for="remember-anggota">Ingat saya</label>
+            </div>
+            <button class="btn btn-primary btn-dynamic" type="submit" id="btn-submit-anggota">
+              <span class="btn-text">Masuk</span>
+              <span class="btn-loader hidden"></span>
+            </button>
+          </form>
 
-        <form id="form-login-admin" class="form-block hidden">
-          <h2>Login Admin</h2>
-          <label>Email Admin</label>
-          <input name="email_admin" type="email" required />
-          <label>Password / PIN</label>
-          <input name="password_pin" type="password" required />
-          <label>Admin API Key</label>
-          <input name="admin_api_key" type="password" placeholder="Internal key untuk route admin" required />
-          <button class="btn" type="submit">Masuk</button>
-        </form>
+          <form id="form-login-admin" class="form-block hidden">
+            <div class="input-group">
+              <label for="email_admin">Email Admin</label>
+              <input id="email_admin" name="email_admin" type="email" placeholder="admin@highkick.id" autocomplete="email" />
+              <div class="validation-msg" id="msg-email-admin"></div>
+            </div>
+            <div class="input-group">
+              <label for="password_pin">Password / PIN</label>
+              <div class="password-wrapper">
+                <input id="password_pin" name="password_pin" type="password" placeholder="Masukkan password" autocomplete="current-password" />
+                <button type="button" class="btn-toggle-password" id="toggle-password" aria-label="Toggle password visibility">
+                  <svg id="icon-eye" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <svg id="icon-eye-off" class="hidden" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22"></path></svg>
+                </button>
+              </div>
+              <div class="validation-msg" id="msg-password-pin"></div>
+            </div>
+            <div class="remember-me">
+              <input type="checkbox" id="remember-admin" name="remember" />
+              <label for="remember-admin">Ingat saya</label>
+            </div>
+            <button class="btn btn-primary btn-dynamic" type="submit" id="btn-submit-admin">
+              <span class="btn-text">Masuk</span>
+              <span class="btn-loader hidden"></span>
+            </button>
+          </form>
 
-        <p id="auth-message" class="message"></p>
-      </section>
+          <p id="auth-message" class="message"></p>
+        </section>
+      </div>
     </main>
 
     <script src="/web/js/app.js"></script>
