@@ -1,10 +1,10 @@
 <!doctype html>
 <!--
-  Tujuan file/module: Merender dashboard admin untuk pengelolaan anggota dan iuran.
-  Pemakai oleh siapa: Browser admin setelah autentikasi berhasil.
-  Dependensi utama: /web/css/style.css, /web/js/app.js, /web/js/api.js, /web/js/admin.js.
-  Daftar fungsi public/utama: Menampilkan branding dashboard admin, ringkasan, form input, dan tabel anggota.
-  Side effect penting: Memuat aset logo lokal dan memicu operasi data admin melalui JavaScript.
+  Tujuan file/module: Merender dashboard admin modern dengan layout sidebar yang diringkas, ringkasan KPI, visualisasi data, tabel anggota interaktif, panel operasional iuran, dan drawer mobile yang mudah ditutup.
+  Pemakai oleh siapa: Browser admin setelah autentikasi berhasil masuk ke portal pengelolaan Highkick Taekwondo.
+  Dependensi utama: /web/css/style.css, /web/css/admin.css, /web/js/app.js, /web/js/api.js, CDN Chart.js, dan /web/js/admin.js.
+  Daftar fungsi public/utama: Menampilkan hero dashboard admin, navigasi utama berikon, summary cards, chart status/iuran/dojo, panel operasional form anggota dan iuran, tabel anggota dengan filter/sort, serta kontrol refresh/logout.
+  Side effect penting: Memuat aset logo lokal, dependency chart via CDN, dan memicu operasi data admin melalui JavaScript ke endpoint /api/admin/* dan /api/dashboard-admin.
 -->
 <html lang="id">
   <head>
@@ -12,119 +12,492 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard Admin - HIGHKICK TAEKWONDO JOGJA</title>
     <link rel="stylesheet" href="/web/css/style.css" />
+    <link rel="stylesheet" href="/web/css/admin.css" />
   </head>
-  <body>
-    <main class="container">
-      <header class="topbar">
-        <div class="brand-block">
-          <img
-            class="brand-logo"
-            src="/web/assets/highkick-logo.jpg"
-            alt="Logo HIGHKICK TAEKWONDO JOGJA"
-            decoding="async"
-          />
-          <div class="brand-copy">
-            <p class="brand-kicker">HIGHKICK TAEKWONDO JOGJA</p>
-            <h1 class="brand-title">Dashboard Admin</h1>
-            <p class="brand-subtitle">Kelola anggota, iuran, dan ringkasan dojo.</p>
+  <body class="admin-page">
+    <div class="admin-shell">
+      <aside id="admin-sidebar" class="admin-sidebar" aria-label="Sidebar dashboard admin">
+          <div class="admin-sidebar__inner">
+            <div class="admin-sidebar__header">
+              <div class="brand-block admin-brand-block">
+                <img
+                  class="brand-logo"
+                  src="/web/assets/highkick-logo.jpg"
+                  alt="Logo HIGHKICK TAEKWONDO JOGJA"
+                  decoding="async"
+                />
+                <div class="brand-copy">
+                  <p class="brand-kicker">HIGHKICK TAEKWONDO JOGJA</p>
+                  <h1 class="brand-title">Admin Control Room</h1>
+                  <p class="brand-subtitle">Pantau anggota, iuran, dan ritme dojo dari satu dashboard.</p>
+                </div>
+              </div>
+
+              <button
+                id="btn-sidebar-close"
+                class="admin-sidebar__close"
+                type="button"
+                aria-label="Tutup navigasi admin"
+              >
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+
+          <nav class="admin-nav" aria-label="Navigasi admin utama">
+            <p class="admin-nav__caption">Navigasi utama</p>
+
+            <a class="admin-nav__link" href="#section-overview">
+              <span class="admin-nav__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <title>Ikon ikhtisar</title>
+                  <path d="M4 12.75 12 5l8 7.75v6.75A1.5 1.5 0 0 1 18.5 21h-3.25v-5.5h-6.5V21H5.5A1.5 1.5 0 0 1 4 19.5Z" fill="currentColor" />
+                </svg>
+              </span>
+              <span class="admin-nav__content">
+                <strong>Ikhtisar</strong>
+                <small>Ringkasan KPI dan refresh utama</small>
+              </span>
+            </a>
+
+            <a class="admin-nav__link" href="#section-analytics">
+              <span class="admin-nav__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <title>Ikon visualisasi</title>
+                  <path d="M5.5 19A1.5 1.5 0 0 1 4 17.5v-11A1.5 1.5 0 0 1 5.5 5h13A1.5 1.5 0 0 1 20 6.5v11a1.5 1.5 0 0 1-1.5 1.5Zm1-3.5h2.5v-4H6.5Zm4.25 0h2.5V8.5h-2.5Zm4.25 0h2.5v-6H15Z" fill="currentColor" />
+                </svg>
+              </span>
+              <span class="admin-nav__content">
+                <strong>Visualisasi</strong>
+                <small>Status anggota, iuran, dan dojo</small>
+              </span>
+            </a>
+
+            <a class="admin-nav__link" href="#section-anggota">
+              <span class="admin-nav__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <title>Ikon anggota</title>
+                  <path d="M12 4a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7Zm-6 14a5.5 5.5 0 0 1 11 0v1H6Zm12.5-6.75a2.75 2.75 0 1 1 0 5.5A2.75 2.75 0 0 1 18.5 11.25ZM17 19.5a4.44 4.44 0 0 1 2.5-4 4.5 4.5 0 0 1 4.5 4v.5H17Z" fill="currentColor" />
+                </svg>
+              </span>
+              <span class="admin-nav__content">
+                <strong>Anggota</strong>
+                <small>Tabel, filter, dan pencarian cepat</small>
+              </span>
+            </a>
+
+            <a class="admin-nav__link" href="#section-operations">
+              <span class="admin-nav__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <title>Ikon operasional</title>
+                  <path d="M14.5 4a3.5 3.5 0 0 1 3.42 4.25l2.5 2.5a1.25 1.25 0 1 1-1.77 1.77l-2.5-2.5A3.5 3.5 0 1 1 14.5 4ZM6 13h6a2 2 0 0 1 2 2v5H4v-5a2 2 0 0 1 2-2Zm11.5 1.5A2.5 2.5 0 0 1 20 17v3h-4v-1a4.2 4.2 0 0 0-1-2.7 2.5 2.5 0 0 1 2.5-1.8Z" fill="currentColor" />
+                </svg>
+              </span>
+              <span class="admin-nav__content">
+                <strong>Operasional</strong>
+                <small>Form anggota, setting, dan pembayaran</small>
+              </span>
+            </a>
+          </nav>
+
+          <section class="admin-sidebar__shortcut" aria-label="Catatan navigasi operasional">
+            <p class="admin-sidebar__caption">Akses cepat</p>
+            <p class="admin-sidebar__shortcut-copy">
+              Form CRUD dan setting tetap tersedia penuh di panel <strong>Operasional</strong>, hanya tidak lagi memenuhi navigasi utama.
+            </p>
+          </section>
+
+          <section class="admin-sidebar__status" aria-label="Status sinkronisasi dashboard">
+            <p class="admin-sidebar__caption">Sinkronisasi live</p>
+            <div id="admin-sync-indicator" class="admin-sync" data-state="idle">
+              <span class="admin-sync__dot" aria-hidden="true"></span>
+              <span id="admin-sync-text">Menunggu sinkronisasi awal...</span>
+            </div>
+            <p class="admin-sidebar__updated">
+              Update terakhir
+              <strong id="admin-last-updated">Belum tersedia</strong>
+            </p>
+          </section>
+
+          <button id="btn-logout-admin" class="btn btn-secondary admin-sidebar__logout" type="button">Logout</button>
+        </div>
+      </aside>
+
+      <button
+        id="admin-sidebar-backdrop"
+        class="admin-sidebar-backdrop"
+        type="button"
+        hidden
+        aria-label="Tutup sidebar admin"
+      ></button>
+
+      <main class="admin-main">
+        <header class="admin-mobilebar">
+          <button id="btn-sidebar-toggle" class="admin-mobilebar__toggle" type="button" aria-label="Buka navigasi admin">
+            <span class="admin-mobilebar__toggle-icon" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </span>
+            <span class="admin-mobilebar__toggle-label">Menu</span>
+          </button>
+          <button class="btn btn-secondary admin-mobilebar__refresh" type="button" data-refresh-dashboard>
+            Refresh
+          </button>
+        </header>
+
+        <section id="section-overview" class="admin-hero">
+          <div class="admin-hero__copy">
+            <p class="admin-hero__kicker">Dashboard operasional dojo</p>
+            <h2 class="admin-hero__title">Lihat performa anggota dan tunggakan dalam tampilan yang lebih cepat dibaca.</h2>
+            <p class="admin-hero__lead">
+              Area ini merangkum kesehatan keanggotaan, outstanding iuran, dan aktivitas input admin tanpa mengubah endpoint maupun alur form yang sudah ada.
+            </p>
+            <div class="admin-hero__actions">
+              <a class="btn admin-hero__primary-link" href="#section-anggota">Buka tabel anggota</a>
+              <button class="btn btn-secondary" type="button" data-refresh-dashboard>Segarkan live data</button>
+            </div>
           </div>
-        </div>
-        <button id="btn-logout-admin" class="btn btn-secondary" type="button">Logout</button>
-      </header>
 
-      <section class="grid-four">
-        <article class="card"><h3>Total Anggota</h3><p id="sum-total-anggota">-</p></article>
-        <article class="card"><h3>Aktif</h3><p id="sum-aktif">-</p></article>
-        <article class="card"><h3>Tunggakan Bulanan</h3><p id="sum-tunggakan-bulanan">-</p></article>
-        <article class="card"><h3>Tunggakan Kas</h3><p id="sum-tunggakan-kas">-</p></article>
-      </section>
+          <div class="admin-hero__metrics">
+            <article class="admin-hero-stat">
+              <span class="admin-hero-stat__label">Coverage aktif</span>
+              <strong id="hero-active-rate" class="admin-hero-stat__value">-</strong>
+              <p class="admin-hero-stat__meta">Persentase anggota aktif dari seluruh data anggota terdaftar.</p>
+            </article>
+            <article class="admin-hero-stat">
+              <span class="admin-hero-stat__label">Total outstanding</span>
+              <strong id="hero-total-outstanding" class="admin-hero-stat__value">-</strong>
+              <p class="admin-hero-stat__meta">Gabungan tunggakan bulanan dan kas untuk prioritas follow-up.</p>
+            </article>
+            <article class="admin-hero-stat">
+              <span class="admin-hero-stat__label">Mode refresh</span>
+              <strong id="hero-refresh-state" class="admin-hero-stat__value">-</strong>
+              <p class="admin-hero-stat__meta">Auto refresh berbasis AJAX polling, aman untuk deploy static/cPanel.</p>
+            </article>
+          </div>
+        </section>
 
-      <section class="card">
-        <h2>Data Anggota</h2>
-        <form id="form-anggota" class="grid-two">
-          <input name="member_id" placeholder="member_id (kosongkan jika baru)" />
-          <input name="nomor_anggota" placeholder="Nomor anggota" required />
-          <input name="nama_lengkap" placeholder="Nama lengkap" required />
-          <input name="dojo_cabang" placeholder="Dojo/cabang" />
-          <input name="tingkatan_sabuk" placeholder="Tingkatan sabuk" />
-          <input name="peringkat" placeholder="Peringkat" />
-          <input name="tanggal_bergabung" type="date" />
-          <select name="status_anggota">
-            <option>Aktif</option>
-            <option>Nonaktif</option>
-            <option>Cuti</option>
-          </select>
-          <button class="btn" type="submit">Simpan Anggota</button>
-        </form>
-      </section>
+        <p id="admin-message" class="message admin-message" role="status" aria-live="polite"></p>
 
-      <section class="card">
-        <h2>Setting Iuran</h2>
-        <form id="form-setting-iuran" class="grid-two">
-          <input name="setting_id" placeholder="setting_id (opsional update)" />
-          <input name="nama_iuran" placeholder="Nama iuran" required />
-          <select name="tipe_iuran">
-            <option value="bulanan">Bulanan</option>
-            <option value="kas">Kas</option>
-          </select>
-          <input name="nominal_default" type="number" min="0" placeholder="Nominal default" required />
-          <input name="mulai_berlaku" placeholder="YYYY-MM" />
-          <select name="aktif">
-            <option value="true">Aktif</option>
-            <option value="false">Nonaktif</option>
-          </select>
-          <button class="btn" type="submit">Simpan Setting</button>
-        </form>
-      </section>
+        <section class="admin-kpi-grid" aria-label="Ringkasan KPI admin">
+          <article class="admin-kpi-card" data-metric-card>
+            <span class="admin-kpi-card__eyebrow">Total anggota</span>
+            <strong id="sum-total-anggota" class="admin-kpi-card__value">-</strong>
+            <p class="admin-kpi-card__meta">Jumlah seluruh anggota yang tercatat di sistem.</p>
+          </article>
+          <article class="admin-kpi-card" data-metric-card>
+            <span class="admin-kpi-card__eyebrow">Anggota aktif</span>
+            <strong id="sum-aktif" class="admin-kpi-card__value">-</strong>
+            <p class="admin-kpi-card__meta">Anggota aktif siap latihan dan penagihan rutin.</p>
+          </article>
+          <article class="admin-kpi-card" data-metric-card>
+            <span class="admin-kpi-card__eyebrow">Tunggakan bulanan</span>
+            <strong id="sum-tunggakan-bulanan" class="admin-kpi-card__value">-</strong>
+            <p class="admin-kpi-card__meta">Outstanding iuran bulanan yang belum tertutup.</p>
+          </article>
+          <article class="admin-kpi-card" data-metric-card>
+            <span class="admin-kpi-card__eyebrow">Tunggakan kas</span>
+            <strong id="sum-tunggakan-kas" class="admin-kpi-card__value">-</strong>
+            <p class="admin-kpi-card__meta">Outstanding iuran kas untuk kontrol keuangan dojo.</p>
+          </article>
+        </section>
 
-      <section class="card">
-        <h2>Input Iuran Bulanan</h2>
-        <form id="form-iuran-bulanan" class="grid-two">
-          <input name="nomor_anggota" placeholder="Nomor anggota" required />
-          <input name="periode" placeholder="YYYY-MM" required />
-          <input name="nominal_bayar" type="number" min="0" placeholder="Nominal bayar" required />
-          <input name="tanggal_bayar" type="date" />
-          <input name="metode_bayar" placeholder="Metode bayar" />
-          <input name="catatan" placeholder="Catatan" />
-          <button class="btn" type="submit">Simpan Iuran Bulanan</button>
-        </form>
-      </section>
+        <section id="section-analytics" class="admin-analytics-grid" aria-label="Visualisasi dashboard admin">
+          <article class="admin-panel admin-panel--chart">
+            <div class="admin-panel__header">
+              <div>
+                <p class="admin-panel__eyebrow">Komposisi anggota</p>
+                <h3 class="admin-panel__title">Status keanggotaan</h3>
+              </div>
+              <span class="admin-panel__hint">Aktif, cuti, dan nonaktif</span>
+            </div>
+            <div class="admin-chart-wrap">
+              <canvas id="chart-member-status" aria-label="Grafik status anggota"></canvas>
+            </div>
+            <p id="chart-member-status-fallback" class="admin-chart-fallback hidden"></p>
+          </article>
 
-      <section class="card">
-        <h2>Input Iuran Kas</h2>
-        <form id="form-iuran-kas" class="grid-two">
-          <input name="nomor_anggota" placeholder="Nomor anggota" required />
-          <input name="periode" placeholder="YYYY-MM" required />
-          <input name="nominal_bayar" type="number" min="0" placeholder="Nominal bayar" required />
-          <input name="tanggal_bayar" type="date" />
-          <input name="catatan" placeholder="Catatan" />
-          <button class="btn" type="submit">Simpan Iuran Kas</button>
-        </form>
-      </section>
+          <article class="admin-panel admin-panel--chart">
+            <div class="admin-panel__header">
+              <div>
+                <p class="admin-panel__eyebrow">Eksposur keuangan</p>
+                <h3 class="admin-panel__title">Perbandingan tunggakan</h3>
+              </div>
+              <span class="admin-panel__hint">Bulanan vs kas</span>
+            </div>
+            <div class="admin-chart-wrap">
+              <canvas id="chart-finance-balance" aria-label="Grafik outstanding iuran"></canvas>
+            </div>
+            <p id="chart-finance-balance-fallback" class="admin-chart-fallback hidden"></p>
+          </article>
 
-      <section class="card">
-        <h2>Daftar Anggota</h2>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Nomor</th>
-                <th>Nama</th>
-                <th>Sabuk</th>
-                <th>Peringkat</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="table-anggota"></tbody>
-          </table>
-        </div>
-      </section>
+          <article class="admin-panel admin-panel--chart">
+            <div class="admin-panel__header">
+              <div>
+                <p class="admin-panel__eyebrow">Sebaran dojo</p>
+                <h3 class="admin-panel__title">Top dojo/cabang</h3>
+              </div>
+              <span class="admin-panel__hint">Berdasarkan daftar anggota saat ini</span>
+            </div>
+            <div class="admin-chart-wrap">
+              <canvas id="chart-dojo-distribution" aria-label="Grafik distribusi dojo"></canvas>
+            </div>
+            <p id="chart-dojo-distribution-fallback" class="admin-chart-fallback hidden"></p>
+          </article>
+        </section>
 
-      <p id="admin-message" class="message"></p>
-    </main>
+        <section id="section-anggota" class="admin-panel admin-panel--table">
+          <div class="admin-panel__header admin-panel__header--stack">
+            <div>
+              <p class="admin-panel__eyebrow">Manajemen data anggota</p>
+              <h3 class="admin-panel__title">Daftar anggota terfilter</h3>
+            </div>
+            <span id="member-table-count" class="admin-panel__hint">Memuat data anggota...</span>
+          </div>
+
+          <div class="admin-toolbar" aria-label="Filter dan sorting anggota">
+            <label class="admin-field admin-field--wide">
+              <span class="admin-field__label">Cari anggota</span>
+              <input
+                id="member-search"
+                type="search"
+                placeholder="Cari nomor, nama, dojo, sabuk, atau peringkat"
+                autocomplete="off"
+              />
+            </label>
+
+            <label class="admin-field">
+              <span class="admin-field__label">Filter status</span>
+              <select id="member-status-filter">
+                <option value="all">Semua status</option>
+                <option value="Aktif">Aktif</option>
+                <option value="Cuti">Cuti</option>
+                <option value="Nonaktif">Nonaktif</option>
+              </select>
+            </label>
+
+            <label class="admin-field">
+              <span class="admin-field__label">Urutkan</span>
+              <select id="member-sort">
+                <option value="nama_lengkap:asc">Nama A-Z</option>
+                <option value="nama_lengkap:desc">Nama Z-A</option>
+                <option value="nomor_anggota:asc">Nomor anggota</option>
+                <option value="tanggal_bergabung:desc">Terbaru bergabung</option>
+                <option value="status_anggota:asc">Status anggota</option>
+                <option value="dojo_cabang:asc">Dojo / cabang</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="table-wrap admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>
+                    <button class="admin-sort-button" type="button" data-sort-key="nomor_anggota">Nomor</button>
+                  </th>
+                  <th>
+                    <button class="admin-sort-button" type="button" data-sort-key="nama_lengkap">Nama</button>
+                  </th>
+                  <th>
+                    <button class="admin-sort-button" type="button" data-sort-key="dojo_cabang">Dojo</button>
+                  </th>
+                  <th>
+                    <button class="admin-sort-button" type="button" data-sort-key="tingkatan_sabuk">Sabuk</button>
+                  </th>
+                  <th>
+                    <button class="admin-sort-button" type="button" data-sort-key="peringkat">Peringkat</button>
+                  </th>
+                  <th>
+                    <button class="admin-sort-button" type="button" data-sort-key="tanggal_bergabung">Bergabung</button>
+                  </th>
+                  <th>
+                    <button class="admin-sort-button" type="button" data-sort-key="status_anggota">Status</button>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="table-anggota"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="section-operations" class="admin-operations" aria-label="Panel operasional admin">
+          <header class="admin-operations__intro admin-panel">
+            <div class="admin-panel__header admin-panel__header--stack">
+              <div>
+                <p class="admin-panel__eyebrow">Panel operasional</p>
+                <h3 class="admin-panel__title">Kelola detail anggota dan transaksi tanpa memenuhi navigasi utama</h3>
+              </div>
+              <span class="admin-panel__hint">Semua form admin lama tetap tersedia di bawah ini</span>
+            </div>
+          </header>
+
+          <div class="admin-form-grid">
+            <article id="section-form-anggota" class="admin-panel admin-form-card">
+            <div class="admin-panel__header">
+              <div>
+                <p class="admin-panel__eyebrow">CRUD anggota</p>
+                <h3 class="admin-panel__title">Data anggota</h3>
+              </div>
+            </div>
+            <form id="form-anggota" class="admin-form-grid-fields">
+              <label class="admin-field">
+                <span class="admin-field__label">Member ID</span>
+                <input name="member_id" placeholder="Kosongkan jika ingin membuat anggota baru" />
+              </label>
+              <label class="admin-field">
+                <span class="admin-field__label">Nomor anggota</span>
+                <input name="nomor_anggota" placeholder="Contoh: TKD-002" required />
+              </label>
+              <label class="admin-field admin-field--wide">
+                <span class="admin-field__label">Nama lengkap</span>
+                <input name="nama_lengkap" placeholder="Nama lengkap anggota" required />
+              </label>
+              <label class="admin-field">
+                <span class="admin-field__label">Dojo / cabang</span>
+                <input name="dojo_cabang" placeholder="Dojo / cabang" />
+              </label>
+              <label class="admin-field">
+                <span class="admin-field__label">Tingkatan sabuk</span>
+                <input name="tingkatan_sabuk" placeholder="Misal: Hijau" />
+              </label>
+              <label class="admin-field">
+                <span class="admin-field__label">Peringkat</span>
+                <input name="peringkat" placeholder="Misal: 4 Geup" />
+              </label>
+              <label class="admin-field">
+                <span class="admin-field__label">Tanggal bergabung</span>
+                <input name="tanggal_bergabung" type="date" />
+              </label>
+              <label class="admin-field">
+                <span class="admin-field__label">Status anggota</span>
+                <select name="status_anggota">
+                  <option>Aktif</option>
+                  <option>Nonaktif</option>
+                  <option>Cuti</option>
+                </select>
+              </label>
+              <button class="btn admin-form__submit" type="submit">Simpan anggota</button>
+            </form>
+          </article>
+
+            <article id="section-setting-iuran" class="admin-panel admin-form-card">
+            <div class="admin-panel__header">
+              <div>
+                <p class="admin-panel__eyebrow">Master iuran</p>
+                <h3 class="admin-panel__title">Setting iuran</h3>
+              </div>
+            </div>
+            <form id="form-setting-iuran" class="admin-form-grid-fields">
+              <label class="admin-field">
+                <span class="admin-field__label">Setting ID</span>
+                <input name="setting_id" placeholder="Isi saat update setting yang sudah ada" />
+              </label>
+              <label class="admin-field admin-field--wide">
+                <span class="admin-field__label">Nama iuran</span>
+                <input name="nama_iuran" placeholder="Misal: Iuran Bulanan Reguler" required />
+              </label>
+              <label class="admin-field">
+                <span class="admin-field__label">Tipe iuran</span>
+                <select name="tipe_iuran">
+                  <option value="bulanan">Bulanan</option>
+                  <option value="kas">Kas</option>
+                </select>
+              </label>
+              <label class="admin-field">
+                <span class="admin-field__label">Nominal default</span>
+                <input name="nominal_default" type="number" min="0" placeholder="Nominal default" required />
+              </label>
+              <label class="admin-field">
+                <span class="admin-field__label">Mulai berlaku</span>
+                <input name="mulai_berlaku" placeholder="YYYY-MM" />
+              </label>
+              <label class="admin-field">
+                <span class="admin-field__label">Aktif</span>
+                <select name="aktif">
+                  <option value="true">Aktif</option>
+                  <option value="false">Nonaktif</option>
+                </select>
+              </label>
+              <button class="btn admin-form__submit" type="submit">Simpan setting</button>
+            </form>
+          </article>
+
+            <article id="section-iuran-bulanan" class="admin-panel admin-form-card">
+            <div class="admin-panel__header">
+              <div>
+                <p class="admin-panel__eyebrow">Input pembayaran</p>
+                <h3 class="admin-panel__title">Iuran bulanan</h3>
+              </div>
+            </div>
+            <form id="form-iuran-bulanan" class="admin-form-grid-fields">
+              <label class="admin-field">
+                <span class="admin-field__label">Nomor anggota</span>
+                <input name="nomor_anggota" placeholder="Nomor anggota" required />
+              </label>
+              <label class="admin-field">
+                <span class="admin-field__label">Periode</span>
+                <input name="periode" placeholder="YYYY-MM" required />
+              </label>
+              <label class="admin-field">
+                <span class="admin-field__label">Nominal bayar</span>
+                <input name="nominal_bayar" type="number" min="0" placeholder="Nominal bayar" required />
+              </label>
+              <label class="admin-field">
+                <span class="admin-field__label">Tanggal bayar</span>
+                <input name="tanggal_bayar" type="date" />
+              </label>
+              <label class="admin-field">
+                <span class="admin-field__label">Metode bayar</span>
+                <input name="metode_bayar" placeholder="Transfer / cash / QRIS" />
+              </label>
+              <label class="admin-field admin-field--wide">
+                <span class="admin-field__label">Catatan</span>
+                <input name="catatan" placeholder="Catatan pembayaran bulanan" />
+              </label>
+              <button class="btn admin-form__submit" type="submit">Simpan iuran bulanan</button>
+            </form>
+          </article>
+
+            <article id="section-iuran-kas" class="admin-panel admin-form-card">
+            <div class="admin-panel__header">
+              <div>
+                <p class="admin-panel__eyebrow">Input pembayaran</p>
+                <h3 class="admin-panel__title">Iuran kas</h3>
+              </div>
+            </div>
+            <form id="form-iuran-kas" class="admin-form-grid-fields">
+              <label class="admin-field">
+                <span class="admin-field__label">Nomor anggota</span>
+                <input name="nomor_anggota" placeholder="Nomor anggota" required />
+              </label>
+              <label class="admin-field">
+                <span class="admin-field__label">Periode</span>
+                <input name="periode" placeholder="YYYY-MM" required />
+              </label>
+              <label class="admin-field">
+                <span class="admin-field__label">Nominal bayar</span>
+                <input name="nominal_bayar" type="number" min="0" placeholder="Nominal bayar" required />
+              </label>
+              <label class="admin-field">
+                <span class="admin-field__label">Tanggal bayar</span>
+                <input name="tanggal_bayar" type="date" />
+              </label>
+              <label class="admin-field admin-field--wide">
+                <span class="admin-field__label">Catatan</span>
+                <input name="catatan" placeholder="Catatan pembayaran kas" />
+              </label>
+              <button class="btn admin-form__submit" type="submit">Simpan iuran kas</button>
+            </form>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
 
     <script src="/web/js/app.js"></script>
     <script src="/web/js/api.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <script src="/web/js/admin.js"></script>
   </body>
 </html>
