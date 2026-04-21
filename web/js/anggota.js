@@ -31,7 +31,7 @@ let currentView = 'section-profil';
 
 document.getElementById('btn-logout-anggota')?.addEventListener('click', () => {
   localStorage.removeItem('nomor_anggota');
-  window.location.href = '/index.html';
+  window.location.href = '/';
 });
 
 // Sidebar logic
@@ -112,7 +112,7 @@ function renderHistory(tableEl, rows) {
 
 async function initAnggotaPage() {
   if (!nomorAnggota) {
-    window.location.href = '/index.html';
+    window.location.href = '/';
     return;
   }
   

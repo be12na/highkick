@@ -1,31 +1,58 @@
 # Highkick Taekwondo - cPanel .htaccess
+# Clean URL Structure: Remove /web/ prefix and .html extensions
+# Example: /web/admin.html → /admin (with 301 redirect)
 
 # Protect config files from web access
-<Files "config/database.php">
+<FilesMatch "(database|config)\.php$">
     Order allow,deny
     Deny from all
-</Files>
+</FilesMatch>
 
 # Enable RewriteEngine
 RewriteEngine On
 RewriteBase /
 
-# API Routes - Forward all /api/* requests to PHP API
-RewriteRule ^api/(.*)$ api/index.php [L,QSA]
+# ===== 301 PERMANENT REDIRECTS (Old URLs → Clean URLs) =====
 
-# HTML Pages - Serve from web/ folder
+# Redirect /web/anything → /anything (strip /web/ prefix)
+RewriteCond %{THE_REQUEST} \s/web/([^\s\?]*) [NC]
+RewriteRule ^ /%1 [R=301,L]
+
+# Redirect /something.html → /something (strip .html extension)
+RewriteCond %{THE_REQUEST} \s/([^.\s\?]*?)\.html[\s\?] [NC]
+RewriteRule ^ /%1 [R=301,L]
+
+# Redirect /index → / (canonical root)
+RewriteRule ^index$ / [R=301,L]
+
+# ===== INTERNAL REWRITES (Serve files without exposing real paths) =====
+
+# API Routes - Forward all /api/* requests to PHP API
+RewriteRule ^api/?(.*)$ api/index.php [L,QSA]
+
+# Root URL → serve web/index.html (internal, no redirect)
+RewriteRule ^$ web/index.html [L]
+
+# Clean URL pages → serve from web/ folder
+# /admin → web/admin.html, /anggota → web/anggota.html
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(index|admin|anggota)\.html$ web/$1.html [L,QSA]
+RewriteRule ^(admin|anggota)$ web/$1.html [L]
 
-# Root redirect to web/index.html
-RewriteRule ^/?$ web/index.html [L,R=301]
+# Static assets: /css/, /js/, /assets/, /manifest.json, /sw.js → web/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(css|js|assets)/(.*)$ web/$1/$2 [L]
 
-# Security Headers
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(manifest\.json|sw\.js)$ web/$1 [L]
+
+# ===== SECURITY HEADERS =====
 <IfModule mod_headers.c>
     Header set X-Content-Type-Options "nosniff"
     Header set X-Frame-Options "SAMEORIGIN"
     Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>
 
 # Disable directory listing
@@ -59,8 +86,10 @@ Options -Indexes
     ExpiresByType image/jpeg "access plus 1 year"
     ExpiresByType image/gif "access plus 1 year"
     ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
     ExpiresByType text/css "access plus 1 month"
     ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType application/json "access plus 1 week"
 </IfModule>
 
 # Default charset

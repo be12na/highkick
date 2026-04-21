@@ -79,7 +79,7 @@ btnLogout?.addEventListener('click', () => {
   localStorage.removeItem('admin_token');
   localStorage.removeItem('admin_profile');
   stopPolling();
-  window.location.href = '/index.html';
+  window.location.href = '/';
 });
 
 sidebarToggle?.addEventListener('click', () => {
@@ -825,7 +825,7 @@ async function refreshDashboard({ silent = false, announceSuccess = false } = {}
 async function initAdminPage() {
   const adminToken = localStorage.getItem('admin_token');
   if (!adminToken) {
-    window.location.href = '/index.html';
+    window.location.href = '/';
     return;
   }
 

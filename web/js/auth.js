@@ -126,7 +126,7 @@ formAnggota?.addEventListener('submit', async (e) => {
     }
 
     localStorage.setItem('nomor_anggota', payload.nomor_anggota);
-    window.location.href = '/anggota.html';
+    window.location.href = '/anggota';
   } catch (err) {
     showMessage(authMessage, err.message, true);
     if (authMessage) authMessage.classList.add('error');
@@ -188,7 +188,7 @@ formAdmin?.addEventListener('submit', async (e) => {
     localStorage.setItem('admin_profile', JSON.stringify(res.data.admin || {}));
     
     // Use window.location.replace to redirect to dashboard cleanly
-    window.location.replace('/admin.html');
+    window.location.replace('/admin');
   } catch (err) {
     showMessage(authMessage, err.message, true);
     if (authMessage) authMessage.classList.add('error');

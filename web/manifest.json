@@ -2,7 +2,7 @@
   "name": "Highkick Taekwondo Jogja",
   "short_name": "Highkick",
   "description": "Portal resmi manajemen dan member Highkick Taekwondo Jogja",
-  "start_url": "/index.html",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",

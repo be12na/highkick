@@ -1,8 +1,8 @@
-const CACHE_NAME = 'highkick-pwa-cache-v1';
+const CACHE_NAME = 'highkick-pwa-cache-v2';
 const ASSETS_TO_CACHE = [
-  '/index.html',
-  '/admin.html',
-  '/anggota.html',
+  '/',
+  '/admin',
+  '/anggota',
   '/css/style.css',
   '/css/admin.css',
   '/css/login.css',
@@ -52,7 +52,7 @@ self.addEventListener('fetch', (event) => {
         return networkResponse;
       }).catch(() => {
         if (event.request.mode === 'navigate') {
-          return caches.match('/index.html');
+          return caches.match('/');
         }
       });
 
