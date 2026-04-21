@@ -1,0 +1,23 @@
+{
+  "name": "Highkick Taekwondo Jogja",
+  "short_name": "Highkick",
+  "description": "Portal resmi manajemen dan member Highkick Taekwondo Jogja",
+  "start_url": "/web/index.html",
+  "scope": "/web/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/web/assets/highkick-logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "/web/assets/highkick-logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
