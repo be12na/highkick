@@ -36,8 +36,8 @@ const sidebar = document.getElementById('admin-sidebar');
 const sidebarBackdrop = document.getElementById('admin-sidebar-backdrop');
 const sidebarToggle = document.getElementById('btn-sidebar-toggle');
 const sidebarClose = document.getElementById('btn-sidebar-close');
-const navLinks = Array.from(document.querySelectorAll('.admin-nav__link[data-target], .admin-nav__sublink[data-target]'));
-const navToggles = Array.from(document.querySelectorAll('.nav-toggle'));
+const navLinks = Array.from(document.querySelectorAll('.admin-nav__link-clean[data-target], .admin-nav__subitem[data-target]'));
+const navToggles = Array.from(document.querySelectorAll('.admin-nav__group-toggle'));
 const viewSections = Array.from(document.querySelectorAll('.view-section'));
 const pageLoader = document.getElementById('page-loader');
 
@@ -115,6 +115,16 @@ async function switchView(targetId) {
   if (state.currentView === targetId && document.getElementById(targetId) && !document.getElementById(targetId).classList.contains('hidden')) return;
   state.currentView = targetId;
 
+  // Map sub-targets that live inside a parent view-section
+  const nestedTargets = {
+    'section-form-anggota': 'section-operations',
+    'section-setting-iuran': 'section-operations',
+    'section-iuran-bulanan': 'section-operations',
+    'section-iuran-kas': 'section-operations',
+  };
+  const parentSection = nestedTargets[targetId] || null;
+  const resolvedViewId = parentSection || targetId;
+
   // Set active link
   navLinks.forEach((link) => {
     const isActive = link.dataset.target === targetId;
@@ -131,19 +141,26 @@ async function switchView(targetId) {
   viewSections.forEach(sec => sec.classList.add('hidden'));
   if (pageLoader) pageLoader.classList.remove('hidden');
 
-  // Short delay to simulate loading or allow fetch
-  await new Promise(r => setTimeout(r, 400));
+  await new Promise(r => setTimeout(r, 300));
   
   if (pageLoader) pageLoader.classList.add('hidden');
   
-  // Show target section and any shared sections if not explicitly hidden in this view
-  const targetSec = document.getElementById(targetId);
+  // Show the resolved view section
+  const targetSec = document.getElementById(resolvedViewId);
   if (targetSec) targetSec.classList.remove('hidden');
   
   // Also show shared sections (like KPIs) if we are on dashboard sections
   const sharedKpis = document.getElementById('section-kpis');
-  if (sharedKpis && (targetId === 'section-overview' || targetId === 'section-analytics')) {
+  if (sharedKpis && (resolvedViewId === 'section-overview' || resolvedViewId === 'section-analytics')) {
     sharedKpis.classList.remove('hidden');
+  }
+
+  // Scroll to nested target if applicable
+  if (parentSection) {
+    const nestedEl = document.getElementById(targetId);
+    if (nestedEl) {
+      nestedEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 }
 
