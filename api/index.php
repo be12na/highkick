@@ -58,6 +58,10 @@ if (!$action) {
         $action = 'saveIuranKas';
     } elseif (strpos($path, 'admin/setting-iuran') !== false) {
         $action = isset($input['mode']) && $input['mode'] === 'list' ? 'getSettingIuran' : 'updateSettingIuran';
+    } elseif (strpos($path, 'admin/profile') !== false) {
+        $action = 'updateAdminProfile';
+    } elseif (strpos($path, 'admin/password') !== false) {
+        $action = 'updateAdminPassword';
     } elseif (strpos($path, 'health') !== false) {
         $action = 'health';
     }
@@ -111,6 +115,14 @@ try {
         case 'saveIuranKas':
             validateAdminToken(resolveAdminToken($input));
             $result = saveIuranKas($data);
+            break;
+        case 'updateAdminProfile':
+            validateAdminToken(resolveAdminToken($input));
+            $result = updateAdminProfile($data, resolveAdminToken($input));
+            break;
+        case 'updateAdminPassword':
+            validateAdminToken(resolveAdminToken($input));
+            $result = updateAdminPassword($data, resolveAdminToken($input));
             break;
         default:
             throw new Exception('Action tidak dikenali: ' . $action);
@@ -651,4 +663,39 @@ function totalOutstanding($rows) {
         $total += max(toNumber($row['nominal_tagihan']) - toNumber($row['nominal_bayar']), 0);
     }
     return $total;
+}
+
+function updateAdminProfile($data, $token) {
+    $nama = normalize($data['nama_admin'] ?? '');
+    $email = strtolower(normalize($data['email_admin'] ?? ''));
+
+    if (!$nama || !$email) {
+        throw new Exception('Nama dan Email wajib diisi');
+    }
+
+    db()->execute(
+        "UPDATE admin_user SET nama_admin = ?, email_admin = ? WHERE session_token = ?",
+        [$nama, $email, $token]
+    );
+
+    $row = db()->fetchOne("SELECT admin_id, nama_admin, email_admin, role FROM admin_user WHERE session_token = ?", [$token]);
+    return $row;
+}
+
+function updateAdminPassword($data, $token) {
+    $passwordBaru = normalize($data['password_baru'] ?? '');
+    $konfirmasi = normalize($data['password_konfirmasi'] ?? '');
+
+    if (!$passwordBaru) throw new Exception('Password baru wajib diisi');
+    if (strlen($passwordBaru) < 4) throw new Exception('Password minimal 4 karakter');
+    if ($passwordBaru !== $konfirmasi) throw new Exception('Konfirmasi password tidak cocok');
+
+    $hash = password_hash($passwordBaru, PASSWORD_DEFAULT);
+
+    db()->execute(
+        "UPDATE admin_user SET password_pin = ? WHERE session_token = ?",
+        [$hash, $token]
+    );
+
+    return true;
 }

@@ -17,6 +17,8 @@ const formAnggota = document.getElementById('form-anggota');
 const formSetting = document.getElementById('form-setting-iuran');
 const formBulanan = document.getElementById('form-iuran-bulanan');
 const formKas = document.getElementById('form-iuran-kas');
+const formEditProfile = document.getElementById('form-edit-profile');
+const formGantiPassword = document.getElementById('form-ganti-password');
 const btnLogout = document.getElementById('btn-logout-admin');
 
 const syncIndicator = document.getElementById('admin-sync-indicator');
@@ -270,6 +272,37 @@ formKas?.addEventListener('submit', async (event) => {
   await submitAdminForm({
     form: formKas,
     endpoint: '/api/admin/iuran-kas',
+    payloadBuilder: (payload) => payload,
+  });
+});
+
+formEditProfile?.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  await submitAdminForm({
+    form: formEditProfile,
+    endpoint: '/api/admin/profile',
+    payloadBuilder: (payload) => payload,
+    resetAfter: false,
+  });
+  // Update local storage
+  const updatedName = document.getElementById('profile-nama')?.value;
+  const updatedEmail = document.getElementById('profile-email')?.value;
+  const adminProfileStr = localStorage.getItem('admin_profile');
+  if (adminProfileStr && updatedName && updatedEmail) {
+    try {
+      const profileInfo = JSON.parse(adminProfileStr);
+      profileInfo.nama_admin = updatedName;
+      profileInfo.email_admin = updatedEmail;
+      localStorage.setItem('admin_profile', JSON.stringify(profileInfo));
+    } catch (e) {}
+  }
+});
+
+formGantiPassword?.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  await submitAdminForm({
+    form: formGantiPassword,
+    endpoint: '/api/admin/password',
     payloadBuilder: (payload) => payload,
   });
 });
@@ -755,7 +788,7 @@ function renderCharts() {
   });
 }
 
-async function submitAdminForm({ form, endpoint, payloadBuilder }) {
+async function submitAdminForm({ form, endpoint, payloadBuilder, resetAfter = true }) {
   const submitButton = form?.querySelector('button[type="submit"]');
   const originalLabel = submitButton?.textContent || 'Simpan';
 
@@ -764,7 +797,7 @@ async function submitAdminForm({ form, endpoint, payloadBuilder }) {
     const payload = payloadBuilder(formToObject(form));
     const response = await postApi(endpoint, payload, true);
     setMessage(response.message || 'Perubahan berhasil disimpan.');
-    form.reset();
+    if (resetAfter) form.reset();
     await refreshDashboard({ silent: true, announceSuccess: false });
   } catch (error) {
     setMessage(error.message, true);
@@ -877,6 +910,12 @@ async function initAdminPage() {
     if (adminProfileStr) {
       const profileInfo = JSON.parse(adminProfileStr);
       role = profileInfo.role || 'admin';
+      
+      // Pre-fill profile form
+      const inputNama = document.getElementById('profile-nama');
+      const inputEmail = document.getElementById('profile-email');
+      if (inputNama) inputNama.value = profileInfo.nama_admin || '';
+      if (inputEmail) inputEmail.value = profileInfo.email_admin || '';
     }
   } catch (e) {}
 

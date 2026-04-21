@@ -59,8 +59,8 @@
                 <svg class="admin-nav__chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
               </button>
               <div class="admin-nav__submenu">
-                <a class="admin-nav__subitem" href="#" data-target="section-overview">Edit Profile</a>
-                <a class="admin-nav__subitem" href="#" data-target="section-overview">Ganti Password</a>
+                <a class="admin-nav__subitem" href="#" data-target="section-profile">Edit Profile</a>
+                <a class="admin-nav__subitem" href="#" data-target="section-profile">Ganti Password</a>
               </div>
             </div>
 
@@ -162,7 +162,60 @@
         </div>
 
         <div id="view-container">
-          <section id="section-overview" class="view-section">
+          <section id="section-overview" class="view-section"></section>
+
+          <section id="section-profile" class="admin-form-grid view-section hidden" aria-label="Pengaturan profil dan password admin">
+            
+            <article id="panel-edit-profile" class="admin-panel admin-form-card">
+              <div class="admin-panel__header">
+                <div>
+                  <p class="admin-panel__eyebrow">Pengaturan Akun</p>
+                  <h3 class="admin-panel__title">Edit Profile</h3>
+                </div>
+              </div>
+              <form id="form-edit-profile">
+                <input type="hidden" name="action" value="updateAdminProfile" />
+                <div class="admin-form-grid-fields">
+                  <label class="admin-field admin-field--wide">
+                    <span class="admin-field__label">Nama admin</span>
+                    <input type="text" id="profile-nama" name="nama_admin" required />
+                  </label>
+                  <label class="admin-field admin-field--wide">
+                    <span class="admin-field__label">Email admin</span>
+                    <input type="email" id="profile-email" name="email_admin" required />
+                  </label>
+                </div>
+                <button type="submit" class="btn btn-primary admin-form__submit">
+                  <span class="btn-text">Simpan Profile</span>
+                </button>
+              </form>
+            </article>
+
+            <article id="panel-ganti-password" class="admin-panel admin-form-card">
+              <div class="admin-panel__header">
+                <div>
+                  <p class="admin-panel__eyebrow">Keamanan</p>
+                  <h3 class="admin-panel__title">Ganti Password</h3>
+                </div>
+              </div>
+              <form id="form-ganti-password">
+                <input type="hidden" name="action" value="updateAdminPassword" />
+                <div class="admin-form-grid-fields">
+                  <label class="admin-field admin-field--wide">
+                    <span class="admin-field__label">Password Baru</span>
+                    <input type="password" name="password_baru" placeholder="Minimal 4 karakter" required minlength="4" />
+                  </label>
+                  <label class="admin-field admin-field--wide">
+                    <span class="admin-field__label">Konfirmasi Password Baru</span>
+                    <input type="password" name="password_konfirmasi" placeholder="..." required minlength="4" />
+                  </label>
+                </div>
+                <button type="submit" class="btn btn-primary admin-form__submit" style="background:#059669; border-color:#059669;">
+                  <span class="btn-text">Update Password</span>
+                </button>
+              </form>
+            </article>
+
           </section>
 
           <p id="admin-message" class="message admin-message" role="status" aria-live="polite"></p>
