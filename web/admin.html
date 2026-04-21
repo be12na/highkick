@@ -91,7 +91,7 @@
 
 
 
-            <a class="admin-nav__link-clean" href="#" data-target="section-operations">
+            <a class="admin-nav__link-clean" href="#" data-target="section-setting-iuran">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
               <span>Pengaturan</span>
             </a>
@@ -366,10 +366,7 @@
             </div>
           </section>
 
-          <section id="section-operations" class="admin-operations view-section hidden" aria-label="Panel operasional admin">
-
-          <div class="admin-form-grid">
-            <article id="section-form-anggota" class="admin-panel admin-form-card">
+          <section id="section-form-anggota" class="admin-panel admin-form-card view-section hidden">
             <div class="admin-panel__header">
               <div>
                 <p class="admin-panel__eyebrow">CRUD anggota</p>
@@ -415,9 +412,9 @@
               </label>
               <button class="btn admin-form__submit" type="submit">Simpan anggota</button>
             </form>
-          </article>
+          </section>
 
-            <article id="section-setting-iuran" class="admin-panel admin-form-card">
+          <section id="section-setting-iuran" class="admin-panel admin-form-card view-section hidden">
             <div class="admin-panel__header">
               <div>
                 <p class="admin-panel__eyebrow">Master iuran</p>
@@ -457,9 +454,9 @@
               </label>
               <button class="btn admin-form__submit" type="submit">Simpan setting</button>
             </form>
-          </article>
+          </section>
 
-            <article id="section-iuran-bulanan" class="admin-panel admin-form-card">
+          <section id="section-iuran-bulanan" class="admin-panel admin-form-card view-section hidden">
             <div class="admin-panel__header">
               <div>
                 <p class="admin-panel__eyebrow">Input pembayaran</p>
@@ -493,9 +490,9 @@
               </label>
               <button class="btn admin-form__submit" type="submit">Simpan iuran bulanan</button>
             </form>
-          </article>
+          </section>
 
-            <article id="section-iuran-kas" class="admin-panel admin-form-card">
+          <section id="section-iuran-kas" class="admin-panel admin-form-card view-section hidden">
             <div class="admin-panel__header">
               <div>
                 <p class="admin-panel__eyebrow">Input pembayaran</p>
@@ -525,9 +522,7 @@
               </label>
               <button class="btn admin-form__submit" type="submit">Simpan iuran kas</button>
             </form>
-            </article>
-          </div>
-        </section>
+          </section>
         </div>
       </main>
     </div>

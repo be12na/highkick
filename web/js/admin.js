@@ -137,15 +137,7 @@ async function switchView(targetId, updateHistory = true) {
     history.pushState({ targetId }, '', routeMap[targetId]);
   }
 
-  // Map sub-targets that live inside a parent view-section
-  const nestedTargets = {
-    'section-form-anggota': 'section-operations',
-    'section-setting-iuran': 'section-operations',
-    'section-iuran-bulanan': 'section-operations',
-    'section-iuran-kas': 'section-operations',
-  };
-  const parentSection = nestedTargets[targetId] || null;
-  const resolvedViewId = parentSection || targetId;
+  const resolvedViewId = targetId;
 
   // Set active link
   navLinks.forEach((link) => {
@@ -191,13 +183,7 @@ async function switchView(targetId, updateHistory = true) {
     }
   }
 
-  // Scroll to nested target if applicable
-  if (parentSection) {
-    const nestedEl = document.getElementById(targetId);
-    if (nestedEl) {
-      nestedEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }
+
 }
 
 // Global search event
@@ -207,8 +193,8 @@ globalSearchInput?.addEventListener('input', (event) => {
   if (memberSearch) memberSearch.value = term;
   state.searchTerm = term;
   
-  // If not in anggota list or operations, move there to show results
-  if (term && state.currentView !== 'section-anggota' && state.currentView !== 'section-operations') {
+  // If not in anggota list, move there to show results
+  if (term && state.currentView !== 'section-anggota') {
     switchView('section-anggota');
   } else {
     renderMemberTable();
@@ -967,7 +953,7 @@ async function initAdminPage() {
   } catch (e) {}
 
   if (role !== 'superadmin') {
-    const navSetting = document.querySelector('[data-target="section-operations"]');
+    const navSetting = document.querySelector('[data-target="section-setting-iuran"]');
     const navEditPassword = document.querySelector('.admin-nav__subitem[href="#"][data-target="section-overview"]:nth-child(2)'); // Ganti Password
     if (navSetting) navSetting.style.display = 'none';
     if (navEditPassword) navEditPassword.style.display = 'none';
