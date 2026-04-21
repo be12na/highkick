@@ -217,11 +217,11 @@ select:focus {
   gap: 8px;
 }
 
-.btn:hover {
+.btn:hover:not(:disabled) {
   background: var(--primary-dark);
 }
 
-.btn:active {
+.btn:active:not(:disabled) {
   transform: scale(0.98);
 }
 
@@ -230,8 +230,20 @@ select:focus {
   color: #fff;
 }
 
-.btn-secondary:hover {
+.btn-secondary:hover:not(:disabled) {
   background: #334155;
+}
+
+.btn:disabled,
+input:disabled,
+select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+input:disabled,
+select:disabled {
+  background-color: #f1f5f9;
 }
 
 .hidden {

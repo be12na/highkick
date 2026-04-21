@@ -75,9 +75,9 @@
         <div id="view-container">
           <!-- PROFIL SECTION -->
           <section id="section-profil" class="view-section">
-            <h2 class="admin-panel__title" style="margin-bottom: 20px;">Selamat datang, <span id="profil-nama-greet">Anggota</span>!</h2>
+            <h2 class="admin-panel__title margin-bottom-4">Selamat datang, <span id="profil-nama-greet">Anggota</span>!</h2>
             
-            <section class="admin-kpi-grid view-section-shared" aria-label="Ringkasan Iuran">
+            <section class="admin-kpi-grid admin-kpi-grid--3 view-section-shared" aria-label="Ringkasan Iuran">
               <article class="admin-kpi-card flaz-card-purple" data-metric-card>
                 <span class="admin-kpi-card__eyebrow">Total Tagihan</span>
                 <strong id="sum-tagihan" class="admin-kpi-card__value">-</strong>
@@ -92,23 +92,48 @@
               </article>
             </section>
 
-            <div class="admin-kpi-grid" style="grid-template-columns: repeat(2, 1fr); margin-top: 24px;">
+            <div class="admin-form-grid margin-top-4">
               <article class="admin-panel">
                 <div class="admin-panel__header"><div><h3 class="admin-panel__title">Informasi Pribadi</h3></div></div>
-                <p style="margin:8px 0; color:var(--admin-text-muted);"><strong>Nama:</strong> <span id="profil-nama" style="color:var(--admin-text);">-</span></p>
-                <p style="margin:8px 0; color:var(--admin-text-muted);"><strong>Nomor:</strong> <span id="profil-nomor" style="color:var(--admin-text);">-</span></p>
-                <p style="margin:8px 0; color:var(--admin-text-muted);"><strong>Dojo:</strong> <span id="profil-dojo" style="color:var(--admin-text);">-</span></p>
-                <p style="margin:8px 0; color:var(--admin-text-muted);"><strong>Bergabung:</strong> <span id="profil-tgl" style="color:var(--admin-text);">-</span></p>
-                <p style="margin:8px 0; color:var(--admin-text-muted);"><strong>Status:</strong> <span id="profil-status" class="admin-status-pill">-</span></p>
+                <div class="admin-profile-list">
+                  <div class="admin-profile-list__item">
+                    <span>Nama:</span>
+                    <span id="profil-nama" class="admin-profile-list__value">-</span>
+                  </div>
+                  <div class="admin-profile-list__item">
+                    <span>Nomor:</span>
+                    <span id="profil-nomor" class="admin-profile-list__value">-</span>
+                  </div>
+                  <div class="admin-profile-list__item">
+                    <span>Dojo:</span>
+                    <span id="profil-dojo" class="admin-profile-list__value">-</span>
+                  </div>
+                  <div class="admin-profile-list__item">
+                    <span>Bergabung:</span>
+                    <span id="profil-tgl" class="admin-profile-list__value">-</span>
+                  </div>
+                  <div class="admin-profile-list__item">
+                    <span>Status:</span>
+                    <span id="profil-status" class="admin-status-pill">-</span>
+                  </div>
+                </div>
               </article>
               <article class="admin-panel">
                 <div class="admin-panel__header"><div><h3 class="admin-panel__title">Status Bela Diri</h3></div></div>
-                <p style="margin:8px 0; color:var(--admin-text-muted);"><strong>Sabuk:</strong> <span id="profil-sabuk" style="color:var(--admin-text);">-</span></p>
-                <p style="margin:8px 0; color:var(--admin-text-muted);"><strong>Peringkat:</strong> <span id="profil-peringkat" style="color:var(--admin-text);">-</span></p>
+                <div class="admin-profile-list">
+                  <div class="admin-profile-list__item">
+                    <span>Sabuk:</span>
+                    <span id="profil-sabuk" class="admin-profile-list__value">-</span>
+                  </div>
+                  <div class="admin-profile-list__item">
+                    <span>Peringkat:</span>
+                    <span id="profil-peringkat" class="admin-profile-list__value">-</span>
+                  </div>
+                </div>
               </article>
             </div>
             
-            <p id="anggota-message" class="message admin-message hidden" style="margin-top:20px;"></p>
+            <p id="anggota-message" class="message admin-message hidden margin-top-4"></p>
           </section>
 
           <!-- IURAN BULANAN SECTION -->

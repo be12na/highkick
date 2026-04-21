@@ -160,7 +160,17 @@
 
         <div id="view-container">
           <section id="section-overview" class="view-section">
-            <div class="admin-analytics-grid">
+            <div class="admin-overview-grid">
+              <div class="admin-overview__kpis">
+                <article class="admin-kpi-card flaz-card-green" data-metric-card>
+                  <span class="admin-kpi-card__eyebrow">Total anggota</span>
+                  <strong id="sum-total-anggota" class="admin-kpi-card__value">-</strong>
+                </article>
+                <article class="admin-kpi-card flaz-card-blue" data-metric-card>
+                  <span class="admin-kpi-card__eyebrow">Anggota aktif</span>
+                  <strong id="sum-aktif" class="admin-kpi-card__value">-</strong>
+                </article>
+              </div>
               <article class="admin-panel admin-panel--chart">
                 <div class="admin-panel__header">
                   <div>
@@ -174,7 +184,6 @@
                 </div>
                 <p id="chart-member-status-fallback" class="admin-chart-fallback hidden"></p>
               </article>
-
             </div>
           </section>
 
@@ -224,29 +233,14 @@
                     <input type="password" name="password_konfirmasi" placeholder="..." required minlength="4" />
                   </label>
                 </div>
-                <button type="submit" class="btn btn-primary admin-form__submit" style="background:#059669; border-color:#059669;">
+                <button type="submit" class="btn btn-primary btn-success admin-form__submit">
                   <span class="btn-text">Update Password</span>
                 </button>
               </form>
             </article>
 
-          </section>
 
           <p id="admin-message" class="message admin-message" role="status" aria-live="polite"></p>
-
-          <section id="section-kpis" class="admin-kpi-grid view-section view-section-shared" aria-label="Ringkasan KPI admin">
-            <article class="admin-kpi-card flaz-card-green" data-metric-card>
-              <span class="admin-kpi-card__eyebrow">Total anggota</span>
-              <strong id="sum-total-anggota" class="admin-kpi-card__value">-</strong>
-            </article>
-            <article class="admin-kpi-card flaz-card-red" data-metric-card>
-              <span class="admin-kpi-card__eyebrow">Anggota aktif</span>
-              <strong id="sum-aktif" class="admin-kpi-card__value">-</strong>
-            </article>
-
-          </section>
-
-
 
           <section id="section-anggota" class="admin-panel admin-panel--table view-section hidden">
           <div class="admin-panel__header admin-panel__header--stack">
@@ -332,7 +326,7 @@
               <span id="iuran-table-count" class="admin-panel__hint">Memuat data iuran...</span>
             </div>
 
-            <div class="admin-toolbar" style="grid-template-columns: 1fr 1fr;" aria-label="Filter iuran">
+            <div class="admin-toolbar admin-toolbar--half" aria-label="Filter iuran">
               <label class="admin-field">
                 <span class="admin-field__label">Filter tipe</span>
                 <select id="iuran-type-filter">
