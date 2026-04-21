@@ -145,10 +145,10 @@ INSERT INTO `anggota` (
   `foto_url`,
   `catatan`
 ) VALUES
-('mbr_001', 'TKD-001', 'Bagas Pratama', 'Laki-laki', '2008-06-14', '081234567890', 'Jl. Kaliurang Km 8, Sleman, DIY', 'Highkick Jogja Pusat', 'Hijau', '6 Kyu', '2024-01-15', 'Aktif', '', 'Seed utama untuk uji login anggota production.'),
-('mbr_002', 'TKD-002', 'Nabila Putri', 'Perempuan', '2009-02-03', '081234567891', 'Jl. Magelang Km 7, Sleman, DIY', 'Highkick Jogja Barat', 'Biru', '4 Kyu', '2024-03-10', 'Aktif', '', 'Seed tambahan untuk dashboard admin.'),
-('mbr_003', 'TKD-003', 'Rizky Saputra', 'Laki-laki', '2007-11-21', '081234567892', 'Jl. Wates Km 5, Bantul, DIY', 'Highkick Jogja Selatan', 'Kuning', '8 Kyu', '2024-05-20', 'Cuti', '', 'Contoh anggota dengan status cuti.'),
-('mbr_004', 'TKD-004', 'Salsa Maharani', 'Perempuan', '2006-09-01', '081234567893', 'Jl. Solo Km 11, Sleman, DIY', 'Highkick Jogja Timur', 'Merah', '7 Kyu', '2023-12-12', 'Nonaktif', '', 'Contoh anggota dengan status nonaktif.');
+('mbr_001', 'TKD-001', 'Bagas Pratama', 'Laki-laki', '2008-06-14', '081234567890', 'Jl. Kaliurang Km 8, Sleman, DIY', '', 'Hijau', '6 Kyu', '2024-01-15', 'Aktif', '', 'Seed utama untuk uji login anggota production.'),
+('mbr_002', 'TKD-002', 'Nabila Putri', 'Perempuan', '2009-02-03', '081234567891', 'Jl. Magelang Km 7, Sleman, DIY', '', 'Biru', '4 Kyu', '2024-03-10', 'Aktif', '', 'Seed tambahan untuk dashboard admin.'),
+('mbr_003', 'TKD-003', 'Rizky Saputra', 'Laki-laki', '2007-11-21', '081234567892', 'Jl. Wates Km 5, Bantul, DIY', '', 'Kuning', '8 Kyu', '2024-05-20', 'Cuti', '', 'Contoh anggota dengan status cuti.'),
+('mbr_004', 'TKD-004', 'Salsa Maharani', 'Perempuan', '2006-09-01', '081234567893', 'Jl. Solo Km 11, Sleman, DIY', '', 'Merah', '7 Kyu', '2023-12-12', 'Nonaktif', '', 'Contoh anggota dengan status nonaktif.');
 
 -- --------------------------------
 -- Initial data: setting iuran

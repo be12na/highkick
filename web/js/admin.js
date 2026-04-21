@@ -45,10 +45,8 @@ const pageLoader = document.getElementById('page-loader');
 
 const chartMemberStatus = document.getElementById('chart-member-status');
 const chartFinanceBalance = document.getElementById('chart-finance-balance');
-const chartDojoDistribution = document.getElementById('chart-dojo-distribution');
 const chartMemberStatusFallback = document.getElementById('chart-member-status-fallback');
 const chartFinanceBalanceFallback = document.getElementById('chart-finance-balance-fallback');
-const chartDojoDistributionFallback = document.getElementById('chart-dojo-distribution-fallback');
 
 const POLL_INTERVAL_MS = 45000;
 const TABLE_COLUMN_COUNT = 7;
@@ -75,7 +73,6 @@ const state = {
   charts: {
     memberStatus: null,
     financeBalance: null,
-    dojoDistribution: null,
   },
   currentView: 'section-overview'
 };
@@ -672,32 +669,19 @@ function renderCharts() {
   if (!hasChartLibrary) {
     destroyChart('memberStatus');
     destroyChart('financeBalance');
-    destroyChart('dojoDistribution');
     showChartFallback(chartMemberStatus, chartMemberStatusFallback, 'Chart.js tidak termuat, jadi visual grafik tidak bisa ditampilkan sekarang.');
     showChartFallback(chartFinanceBalance, chartFinanceBalanceFallback, 'Chart.js tidak termuat, sehingga grafik outstanding iuran menggunakan fallback teks.');
-    showChartFallback(chartDojoDistribution, chartDojoDistributionFallback, 'Chart.js tidak termuat, sehingga sebaran dojo tidak divisualisasikan.');
     return;
   }
 
   hideChartFallback(chartMemberStatus, chartMemberStatusFallback);
   hideChartFallback(chartFinanceBalance, chartFinanceBalanceFallback);
-  hideChartFallback(chartDojoDistribution, chartDojoDistributionFallback);
 
   const totalAktif = Number(state.summary.total_anggota_aktif || 0);
   const totalCuti = Number(state.summary.total_anggota_cuti || 0);
   const totalNonaktif = Number(state.summary.total_anggota_nonaktif || 0);
   const tunggakanBulanan = Number(state.summary.total_tunggakan_bulanan || 0);
   const tunggakanKas = Number(state.summary.total_tunggakan_kas || 0);
-
-  const dojoCounts = state.members.reduce((accumulator, member) => {
-    const dojoName = normalizeValue(member.dojo_cabang) || 'Belum diisi';
-    accumulator[dojoName] = (accumulator[dojoName] || 0) + 1;
-    return accumulator;
-  }, {});
-
-  const dojoEntries = Object.entries(dojoCounts)
-    .sort((left, right) => right[1] - left[1])
-    .slice(0, 6);
 
   destroyChart('memberStatus');
   state.charts.memberStatus = new window.Chart(chartMemberStatus, {
@@ -756,40 +740,6 @@ function renderCharts() {
       plugins: {
         legend: {
           display: false,
-        },
-      },
-    },
-  });
-
-  destroyChart('dojoDistribution');
-  state.charts.dojoDistribution = new window.Chart(chartDojoDistribution, {
-    type: 'bar',
-    data: {
-      labels: dojoEntries.length ? dojoEntries.map((entry) => entry[0]) : ['Belum ada data'],
-      datasets: [
-        {
-          label: 'Jumlah anggota',
-          data: dojoEntries.length ? dojoEntries.map((entry) => entry[1]) : [0],
-          backgroundColor: 'rgba(14, 165, 233, 0.86)',
-          borderRadius: 12,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      indexAxis: 'y',
-      plugins: {
-        legend: {
-          display: false,
-        },
-      },
-      scales: {
-        x: {
-          beginAtZero: true,
-          ticks: {
-            precision: 0,
-          },
         },
       },
     },
